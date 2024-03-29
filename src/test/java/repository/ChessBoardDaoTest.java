@@ -76,7 +76,6 @@ class ChessBoardDaoTest {
     void createAndDelete() {
         // given
         final ChessBoard chessBoard = ChessBoard.create();
-        final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
         chessBoardDao.addBoard(chessBoard, gameId);
 
         // when

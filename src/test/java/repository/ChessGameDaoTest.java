@@ -50,7 +50,9 @@ class ChessGameDaoTest {
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            connection.setAutoCommit(true);
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
         }
     }
 
