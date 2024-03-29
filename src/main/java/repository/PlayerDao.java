@@ -55,14 +55,4 @@ public class PlayerDao {
             throw new RuntimeException(e);
         }
     }
-
-    public void delete(final PlayerName pobi) {
-        final var query = "DELETE FROM player where name = ?";
-        try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, pobi.getName());
-            preparedStatement.executeUpdate();
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
