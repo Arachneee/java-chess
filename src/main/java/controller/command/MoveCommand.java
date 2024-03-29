@@ -30,17 +30,14 @@ public class MoveCommand extends RunningCommand {
         final Square target = Square.from(command.get(TARGET_INDEX));
 
         chessGameService().move(gameId, source, target);
-        final ChessGame chessGame = chessGameService().findGameById(gameId);
 
-        final ChessBoard chessBoard = chessGame.getChessBoard();
-        OutputView.printChessBoard(chessBoard.getPieceSquares());
+        final ChessGame chessGame = chessGameService().findGameById(gameId);
+        printChessBoard(chessGame);
 
         if (chessGame.getStatus() == ChessGameStatus.END) {
             printScoreStatus(gameId);
-
             return new StartingStatus();
         }
-
         return new RunningStatus(chessGame);
     }
 
@@ -48,5 +45,10 @@ public class MoveCommand extends RunningCommand {
         if (command.size() != MOVE_COMMAND_SIZE) {
             throw new IllegalArgumentException("잘못된 command입니다.");
         }
+    }
+
+    private static void printChessBoard(final ChessGame chessGame) {
+        final ChessBoard chessBoard = chessGame.getChessBoard();
+        OutputView.printChessBoard(chessBoard.getPieceSquares());
     }
 }

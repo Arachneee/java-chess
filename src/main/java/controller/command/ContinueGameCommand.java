@@ -20,22 +20,20 @@ public class ContinueGameCommand extends StartingCommand {
     @Override
     public ChessProgramStatus executeStarting() {
         final List<Integer> runningGame = chessGameService.findRunningGameIds();
-        final int gameId = readGameId(runningGame);
-
-        final ChessGame chessGame = chessGameService.findGameById(gameId);
+        final ChessGame chessGame = findRunningGame(runningGame);
         printStartGame(chessGame);
 
         return new RunningStatus(chessGame);
     }
 
-    private int readGameId(final List<Integer> runningGame) {
+    private ChessGame findRunningGame(final List<Integer> runningGame) {
         while (true) {
-            final int input = InputView.readContinueGame(runningGame);
-            final boolean hasGame = chessGameService.isRunningGame(input);
-            if (hasGame) {
-                return input;
+            try {
+                final int input = InputView.readContinueGame(runningGame);
+                return chessGameService.findRunningGameById(input);
+            } catch (final IllegalArgumentException e) {
+                OutputView.printError(e.getMessage());
             }
-            OutputView.printError("게임 ID가 존재하지 않습니다.");
         }
     }
 }

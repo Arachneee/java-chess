@@ -18,13 +18,11 @@ public class ChessGameService {
     private final Connection connection;
     private final ChessGameDao chessGameDao;
     private final ChessBoardService chessBoardService;
-    private final ChessResultService chessResultService;
 
     public ChessGameService(final Connection connection) {
         this.connection = connection;
         this.chessGameDao = new ChessGameDao(connection);
         this.chessBoardService = new ChessBoardService(connection);
-        this.chessResultService = new ChessResultService(connection);
     }
 
     public ChessGame createNewGame(final Player blackPlayer, final Player whitePlayer) throws SQLException {
@@ -60,6 +58,11 @@ public class ChessGameService {
                 .orElseThrow(() -> new IllegalArgumentException("게임을 찾을 수 없습니다."));
     }
 
+    public ChessGame findRunningGameById(final int gameId) {
+        return chessGameDao.findRunningGameById(gameId)
+                .orElseThrow(() -> new IllegalArgumentException("진행 중인 게임을 찾을 수 없습니다."));
+    }
+
     public List<Integer> findRunningGameIds() {
         final List<Integer> games = chessGameDao.findRunningGameIds();
         if (games.isEmpty()) {
@@ -72,14 +75,14 @@ public class ChessGameService {
         try {
             connection.setAutoCommit(false);
 
-            final ChessGame chessGame = findGameById(gameId);
+            final ChessGame chessGame = findRunningGameById(gameId);
             chessGame.move(source, target);
 
-            chessGameDao.update(chessGame);
-            chessBoardService.update(chessGame.getChessBoard(), gameId);
+            chessGameDao.updateChessGame(chessGame);
+            chessBoardService.updateBoard(chessGame.getChessBoard(), gameId);
 
             if (chessGame.isEnd()) {
-                chessResultService.saveResult(gameId);
+                chessBoardService.saveResult(gameId);
             }
 
             connection.commit();
@@ -95,11 +98,11 @@ public class ChessGameService {
         try {
             connection.setAutoCommit(false);
 
-            final ChessGame chessGame = findGameById(gameId);
+            final ChessGame chessGame = findRunningGameById(gameId);
             chessGame.end();
 
-            chessGameDao.update(chessGame);
-            chessResultService.saveResult(gameId);
+            chessGameDao.updateChessGame(chessGame);
+            chessBoardService.saveResult(gameId);
 
             connection.commit();
         } catch (final Exception e) {
@@ -110,11 +113,7 @@ public class ChessGameService {
         }
     }
 
-    public boolean isRunningGame(final int gameId) {
-        return chessGameDao.existRunningById(gameId);
-    }
-
     public ChessGameResult calculateResult(final int gameId) {
-        return chessResultService.calculateResult(gameId);
+        return chessBoardService.calculateResult(gameId);
     }
 }

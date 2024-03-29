@@ -2,12 +2,8 @@ package domain.game;
 
 import domain.Team;
 import domain.chessboard.ChessBoard;
-import domain.piece.Piece;
 import domain.player.Player;
-import domain.result.ChessGameResult;
 import domain.square.Square;
-
-import java.util.Map;
 
 public class ChessGame {
 
@@ -46,11 +42,6 @@ public class ChessGame {
 
     public void end() {
         status = ChessGameStatus.END;
-    }
-
-    public ChessGameResult calculateResult() {
-        final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
-        return ChessGameResult.from(pieceSquares);
     }
 
     public boolean isEnd() {

@@ -15,7 +15,7 @@ public class StatusCommand extends RunningCommand {
 
     @Override
     public ChessProgramStatus executeRunning(final List<String> playCommandFormat, final int gameId) {
-        final ChessGame chessGame = chessGameService().findGameById(gameId);
+        final ChessGame chessGame = chessGameService().findRunningGameById(gameId);
 
         printScoreStatus(gameId);
 

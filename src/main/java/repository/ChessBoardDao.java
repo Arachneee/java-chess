@@ -19,20 +19,22 @@ public class ChessBoardDao {
     }
 
     public void addBoard(final ChessBoard chessBoard, final int gameId) {
-        chessBoard.getPieceSquares().forEach((square, piece) -> addSquarePiece(square, piece, gameId));
-    }
-
-    private void addSquarePiece(final Square square, final Piece piece, final int gameId) {
         final var query = "INSERT INTO board (file, `rank`, piece_type, team, game_id) VALUES (?, ?, ?, ?, ?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
+            for (final var entry : chessBoard.getPieceSquares().entrySet()) {
+                final var square = entry.getKey();
+                final var piece = entry.getValue();
 
-            preparedStatement.setString(1, square.file().name());
-            preparedStatement.setString(2, square.rank().name());
-            preparedStatement.setString(3, piece.pieceType().name());
-            preparedStatement.setString(4, piece.team().name());
-            preparedStatement.setInt(5, gameId);
+                preparedStatement.setString(1, square.file().name());
+                preparedStatement.setString(2, square.rank().name());
+                preparedStatement.setString(3, piece.pieceType().name());
+                preparedStatement.setString(4, piece.team().name());
+                preparedStatement.setInt(5, gameId);
 
-            preparedStatement.executeUpdate();
+                preparedStatement.addBatch();
+            }
+
+            preparedStatement.executeBatch();
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
@@ -59,19 +61,6 @@ public class ChessBoardDao {
             }
 
             return new ChessBoard(squarePieces);
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean isEmpty(final int gameId) {
-        final var query = "SELECT * FROM board WHERE game_id = (?)";
-        try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
-
-            final var resultSet = preparedStatement.executeQuery();
-
-            return !resultSet.next();
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }

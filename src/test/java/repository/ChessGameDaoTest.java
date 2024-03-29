@@ -2,9 +2,12 @@ package repository;
 
 import connection.ChessConnectionGenerator;
 import domain.Team;
+import domain.chessboard.ChessBoard;
+import domain.game.ChessGame;
 import domain.game.ChessGameStatus;
 import domain.player.Player;
 import domain.player.PlayerName;
+import domain.square.Square;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +23,7 @@ class ChessGameDaoTest {
 
     final Connection connection = ChessConnectionGenerator.getTestConnection();
     final ChessGameDao chessGameDao = new ChessGameDao(connection);
+    final ChessBoardDao chessBoardDao = new ChessBoardDao(connection);
     final PlayerDao playerDao = new PlayerDao(connection);
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");
@@ -52,7 +56,7 @@ class ChessGameDaoTest {
 
     @DisplayName("게임을 추가하고 찾는다.")
     @Test
-    void add() {
+    void create() {
         // given
         final Player blackPlayer = new Player(pobi);
         final Player whitePlayer = new Player(json);
@@ -63,48 +67,39 @@ class ChessGameDaoTest {
         final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, team, status);
 
         // then
-        final Team currentTeam = chessGameDao.findCurrentTeamById(gameId).get();
-        final ChessGameStatus chessGameStatus = chessGameDao.findStatusById(gameId).get();
+        final ChessGame chessGame = chessGameDao.findRunningGameById(gameId).get();
 
         assertAll(
-                () -> assertThat(currentTeam).isEqualTo(team),
-                () -> assertThat(chessGameStatus).isEqualTo(status)
+                () -> assertThat(chessGame.getBlackPlayer()).isEqualTo(blackPlayer),
+                () -> assertThat(chessGame.getWhitePlayer()).isEqualTo(whitePlayer),
+                () -> assertThat(chessGame.getCurrentTeam()).isEqualTo(team),
+                () -> assertThat(chessGame.getStatus()).isEqualTo(status)
         );
     }
 
-    @DisplayName("게임의 현재 팀 변경을 업데이트 한다.")
+    @DisplayName("게임의 상태를 업데이트 한다.")
     @Test
-    void updateCurrentTeam() {
+    void update() {
         // given
         final Player blackPlayer = new Player(pobi);
         final Player whitePlayer = new Player(json);
-        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
+        final Team team = Team.WHITE;
+        final ChessGameStatus status = ChessGameStatus.RUNNING;
+        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, team, status);
+        chessBoardDao.addBoard(ChessBoard.create(), gameId);
+
+        final ChessGame chessGame = chessGameDao.findRunningGameById(gameId).get();
+        chessGame.move(Square.of("B", "TWO"), Square.of("B", "FOUR"));
 
         // when
-        final Team team = Team.BLACK;
-        chessGameDao.updateCurrentTeam(gameId, team);
+        chessGameDao.updateChessGame(chessGame);
 
         // then
-        final Team findTeam = chessGameDao.findCurrentTeamById(gameId).get();
+        final ChessGame findChessGame = chessGameDao.findRunningGameById(gameId).get();
 
-        assertThat(findTeam).isEqualTo(team);
-    }
-
-    @DisplayName("게임의 진행 상태를 업데이트 한다.")
-    @Test
-    void updateStatus() {
-        // given
-        final Player blackPlayer = new Player(pobi);
-        final Player whitePlayer = new Player(json);
-        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
-
-        // when
-        final ChessGameStatus status = ChessGameStatus.END;
-        chessGameDao.updateStatusById(gameId, status);
-
-        // then
-        final ChessGameStatus findStatus = chessGameDao.findStatusById(gameId).get();
-
-        assertThat(findStatus).isEqualTo(status);
+        assertAll(
+                () -> assertThat(findChessGame.getCurrentTeam()).isEqualTo(chessGame.getCurrentTeam()),
+                () -> assertThat(findChessGame.getStatus()).isEqualTo(chessGame.getStatus())
+        );
     }
 }

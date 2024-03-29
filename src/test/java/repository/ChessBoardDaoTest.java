@@ -70,4 +70,19 @@ class ChessBoardDaoTest {
         // then
         assertThat(chessBoard1.getPieceSquares().entrySet()).isEqualTo(pieceSquares.entrySet());
     }
+
+    @DisplayName("체스 보드를 지운다.")
+    @Test
+    void createAndDelete() {
+        // given
+        final ChessBoard chessBoard = ChessBoard.create();
+        final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
+        chessBoardDao.addBoard(chessBoard, gameId);
+
+        // when
+        chessBoardDao.deleteByGameId(gameId);
+
+        // then
+        assertThat(chessBoardDao.findChessBoard(gameId).getPieceSquares()).isEmpty();
+    }
 }
