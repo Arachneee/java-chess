@@ -1,8 +1,8 @@
 package repository;
 
-import domain.ChessGameResult;
 import domain.WinStatus;
 import domain.player.Player;
+import domain.result.ChessGameResult;
 
 import java.sql.Connection;
 import java.sql.SQLException;

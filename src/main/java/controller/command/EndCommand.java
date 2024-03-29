@@ -2,7 +2,7 @@ package controller.command;
 
 import controller.status.ChessProgramStatus;
 import controller.status.StartingStatus;
-import domain.ChessGameResult;
+import domain.result.ChessGameResult;
 import service.ChessGameService;
 import service.ChessResultService;
 import view.OutputView;

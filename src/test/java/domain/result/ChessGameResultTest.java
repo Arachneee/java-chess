@@ -1,5 +1,6 @@
-package domain;
+package domain.result;
 
+import domain.Team;
 import domain.piece.*;
 import domain.square.File;
 import domain.square.Rank;

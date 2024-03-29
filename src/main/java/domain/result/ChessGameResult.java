@@ -1,5 +1,8 @@
-package domain;
+package domain.result;
 
+import domain.Score;
+import domain.Team;
+import domain.WinStatus;
 import domain.piece.Piece;
 import domain.piece.PieceType;
 import domain.square.File;

@@ -1,11 +1,11 @@
 package view;
 
-import domain.ChessGameResult;
 import domain.piece.Piece;
+import domain.result.ChessGameResult;
+import domain.result.WinStatusSummary;
 import domain.square.File;
 import domain.square.Rank;
 import domain.square.Square;
-import dto.PlayerGameRecordDto;
 import view.format.PieceFormat;
 import view.format.WinStatusFormat;
 
@@ -59,9 +59,9 @@ public class OutputView {
                 WinStatusFormat.formatOf(chessGameResult.getWinStatus()));
     }
 
-    public static void printGameRecord(final PlayerGameRecordDto gameRecord) {
+    public static void printGameRecord(final WinStatusSummary winStatusSummary) {
         System.out.printf("전체 전적 : %d승 %d패 %d무%n%n",
-                gameRecord.winCount(), gameRecord.loseCount(), gameRecord.drawCount());
+                winStatusSummary.getWinCount(), winStatusSummary.getLoseCount(), winStatusSummary.getDrawCount());
     }
 
     public static void printError(final String message) {

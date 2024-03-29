@@ -3,7 +3,7 @@ package controller.command;
 import controller.status.ChessProgramStatus;
 import controller.status.StartingStatus;
 import domain.player.Player;
-import dto.PlayerGameRecordDto;
+import domain.result.WinStatusSummary;
 import service.ChessResultService;
 import service.PlayerService;
 import view.InputView;
@@ -24,8 +24,8 @@ public class RecordCommand implements Command {
     @Override
     public ChessProgramStatus executeStart() {
         final Player player = readPlayer();
-        final PlayerGameRecordDto gameRecord = chessResultService.findGameRecord(player);
-        OutputView.printGameRecord(gameRecord);
+        final WinStatusSummary winStatusSummary = chessResultService.findGameRecord(player);
+        OutputView.printGameRecord(winStatusSummary);
 
         return new StartingStatus();
     }
