@@ -2,44 +2,38 @@ package controller.command;
 
 import controller.status.ChessProgramStatus;
 import controller.status.RunningStatus;
-import domain.Team;
-import domain.piece.Piece;
+import domain.chessboard.ChessBoard;
+import domain.game.ChessGame;
 import domain.player.Player;
-import domain.square.Square;
-import service.ChessBoardService;
 import service.ChessGameService;
 import view.InputView;
 import view.OutputView;
 
 import java.util.List;
-import java.util.Map;
 
 public class ContinueCommand implements Command {
 
     private final ChessGameService chessGameService;
-    private final ChessBoardService chessBoardService;
 
-    public ContinueCommand(final ChessGameService chessGameService, final ChessBoardService chessBoardService) {
+    public ContinueCommand(final ChessGameService chessGameService) {
         this.chessGameService = chessGameService;
-        this.chessBoardService = chessBoardService;
     }
 
     @Override
     public ChessProgramStatus executeStart() {
-        final List<Integer> runningGame = chessGameService.findRunningGame();
+        final List<Integer> runningGame = chessGameService.findRunningGameIds();
         final int gameId = readGameId(runningGame);
 
-        final Player blackPlayer = chessGameService.findPlayer(gameId, Team.BLACK);
-        final Player whitePlayer = chessGameService.findPlayer(gameId, Team.WHITE);
+        final ChessGame chessGame = chessGameService.findGameById(gameId);
+
+        final Player blackPlayer = chessGame.getBlackPlayer();
+        final Player whitePlayer = chessGame.getWhitePlayer();
+        final ChessBoard chessBoard = chessGame.getChessBoard();
 
         OutputView.printGameOption(gameId, blackPlayer.getName(), whitePlayer.getName());
+        OutputView.printChessBoard(chessBoard.getPieceSquares());
 
-        final Map<Square, Piece> pieceSquares = chessBoardService.getPieceSquares(gameId);
-        OutputView.printChessBoard(pieceSquares);
-
-        final Team currentTeam = chessGameService.findCurrentTeam(gameId);
-        final Player currentPlayer = chessGameService.findPlayer(gameId, currentTeam);
-        return new RunningStatus(gameId, currentPlayer, currentTeam);
+        return new RunningStatus(chessGame);
     }
 
     @Override
@@ -50,7 +44,7 @@ public class ContinueCommand implements Command {
     private int readGameId(final List<Integer> runningGame) {
         while (true) {
             final int input = InputView.readContinueGame(runningGame);
-            final boolean hasGame = chessGameService.containRunningGame(input);
+            final boolean hasGame = chessGameService.isRunningGame(input);
             if (hasGame) {
                 return input;
             }

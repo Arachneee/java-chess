@@ -1,29 +1,30 @@
 package controller.status;
 
 import domain.Team;
+import domain.game.ChessGame;
 import domain.player.Player;
 import view.InputView;
 
 public class RunningStatus implements ChessProgramStatus {
 
-    private final int gameId;
-    private final Player currentPlayer;
-    private final Team currentTeam;
+    private final ChessGame chessGame;
 
-    public RunningStatus(final int gameId, final Player currentPlayer, final Team currentTeam) {
-        this.gameId = gameId;
-        this.currentPlayer = currentPlayer;
-        this.currentTeam = currentTeam;
+
+    public RunningStatus(final ChessGame chessGame) {
+        this.chessGame = chessGame;
     }
 
     @Override
     public String readCommand() {
+        final Team currentTeam = chessGame.getCurrentTeam();
+        final Player currentPlayer = chessGame.getCurrentPlayer();
+
         return InputView.readGameCommand(currentTeam, currentPlayer.getName());
     }
 
     @Override
-    public int gameId() {
-        return gameId;
+    public int getGameId() {
+        return chessGame.getId();
     }
 
     @Override

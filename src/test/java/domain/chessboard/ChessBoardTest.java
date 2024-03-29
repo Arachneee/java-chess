@@ -30,7 +30,7 @@ class ChessBoardTest {
         final Square target = new Square(File.A, Rank.FOUR);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(source, target))
+        assertThatThrownBy(() -> chessBoard.move(source, target, Team.WHITE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 위치에 기물이 없습니다.");
     }
@@ -43,7 +43,7 @@ class ChessBoardTest {
         final Square source = new Square(File.A, Rank.TWO);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(source, source))
+        assertThatThrownBy(() -> chessBoard.move(source, source, Team.WHITE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("제자리 이동은 불가합니다.");
     }
@@ -57,7 +57,7 @@ class ChessBoardTest {
         final Square target = new Square(File.A, Rank.SIX);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(blackPawnSource, target))
+        assertThatThrownBy(() -> chessBoard.move(blackPawnSource, target, Team.WHITE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상대방의 말을 움직일 수 없습니다.");
     }
@@ -71,7 +71,7 @@ class ChessBoardTest {
         final Square target = new Square(File.C, Rank.THREE);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(pawnSource, target))
+        assertThatThrownBy(() -> chessBoard.move(pawnSource, target, Team.WHITE))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("움직일 수 없는 경로입니다.");
 
@@ -115,7 +115,7 @@ class ChessBoardTest {
                     final Piece whitePawn = chessBoard.getPieceSquares().get(source);
 
                     // when
-                    chessBoard.move(source, target);
+                    chessBoard.move(source, target, Team.WHITE);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -123,10 +123,6 @@ class ChessBoardTest {
 
                     assertThat(movedPiece).isEqualTo(whitePawn);
                 }),
-                dynamicTest("이동 후 턴이 변경된다.", () ->
-                        assertThat(chessBoard).extracting("currentTeam")
-                                .isEqualTo(Team.BLACK)
-                ),
                 /*
                 R.BQKBNR  8 (rank 8)
                 PPPPPPPP  7
@@ -147,7 +143,7 @@ class ChessBoardTest {
                     final Piece blackKnight = chessBoard.getPieceSquares().get(source);
 
                     // when
-                    chessBoard.move(source, target);
+                    chessBoard.move(source, target, Team.BLACK);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -161,7 +157,7 @@ class ChessBoardTest {
                     final Square target = new Square(File.B, Rank.SIX);
 
                     // when & then
-                    assertThatThrownBy(() -> chessBoard.move(pawnSource, target))
+                    assertThatThrownBy(() -> chessBoard.move(pawnSource, target, Team.WHITE))
                             .isInstanceOf(IllegalArgumentException.class)
                             .hasMessage("움직일 수 없는 경로입니다.");
                 }),
@@ -171,7 +167,7 @@ class ChessBoardTest {
                     final Square target = new Square(File.D, Rank.SIX);
 
                     // when & then
-                    assertThatThrownBy(() -> chessBoard.move(queenSource, target))
+                    assertThatThrownBy(() -> chessBoard.move(queenSource, target, Team.WHITE))
                             .isInstanceOf(IllegalArgumentException.class)
                             .hasMessage("기물에 가로막혀 갈 수 없는 경로입니다.");
                 }),
@@ -195,7 +191,7 @@ class ChessBoardTest {
                     final Piece whitePawn = chessBoard.getPieceSquares().get(pawnSource);
 
                     // when
-                    chessBoard.move(pawnSource, target);
+                    chessBoard.move(pawnSource, target, Team.WHITE);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -224,7 +220,7 @@ class ChessBoardTest {
                     final Piece blackKnight = beforePieceSquares.get(knightSource);
 
                     // when
-                    chessBoard.move(knightSource, pawnSource);
+                    chessBoard.move(knightSource, pawnSource, Team.BLACK);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -255,7 +251,7 @@ class ChessBoardTest {
                     final Piece whitePawn = chessBoard.getPieceSquares().get(pawnSource);
 
                     // when
-                    chessBoard.move(pawnSource, knightSource);
+                    chessBoard.move(pawnSource, knightSource, Team.WHITE);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -279,12 +275,12 @@ class ChessBoardTest {
                     // given
                     final Square blackPawnSource = new Square(File.B, Rank.SEVEN);
                     final Square target = new Square(File.B, Rank.FIVE);
-                    chessBoard.move(blackPawnSource, target);
+                    chessBoard.move(blackPawnSource, target, Team.BLACK);
 
                     final Square whitePawnSource = new Square(File.B, Rank.FOUR);
 
                     // when & then
-                    assertThatThrownBy(() -> chessBoard.move(whitePawnSource, target))
+                    assertThatThrownBy(() -> chessBoard.move(whitePawnSource, target, Team.WHITE))
                             .isInstanceOf(IllegalArgumentException.class)
                             .hasMessage("공격할 수 없는 경로입니다.");
                 })

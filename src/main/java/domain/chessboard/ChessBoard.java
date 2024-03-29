@@ -28,13 +28,12 @@ public class ChessBoard {
     );
     private static final Piece BLACK_PAWN = new Pawn(Team.BLACK);
     private static final Piece WHITE_PAWN = new Pawn(Team.WHITE);
+    private static final int KING_COUNT = 2;
 
     private final Map<Square, Piece> pieceSquares;
-    private Team currentTeam;
 
-    public ChessBoard(final Map<Square, Piece> pieceSquares, final Team currentTeam) {
+    public ChessBoard(final Map<Square, Piece> pieceSquares) {
         this.pieceSquares = pieceSquares;
-        this.currentTeam = currentTeam;
     }
 
     public static ChessBoard create() {
@@ -47,23 +46,21 @@ public class ChessBoard {
             chessBoard.put(new Square(file, Rank.ONE), WHITE_PIECE_TYPE_ORDERS.get(file));
         }
 
-        return new ChessBoard(chessBoard, Team.WHITE);
+        return new ChessBoard(chessBoard);
     }
 
-    public void move(final Square source, final Square target) {
-        validateMove(source, target);
+    public void move(final Square source, final Square target, final Team currentTeam) {
+        validateMove(source, target, currentTeam);
 
         final Piece sourcePiece = pieceSquares.get(source);
         pieceSquares.put(target, sourcePiece);
         pieceSquares.remove(source);
-
-        currentTeam = currentTeam.turn();
     }
 
-    private void validateMove(final Square source, final Square target) {
+    private void validateMove(final Square source, final Square target, final Team currentTeam) {
         validateEmptySource(source);
         validateSameSquare(source, target);
-        validateTeam(source);
+        validateTeam(source, currentTeam);
 
         if (pieceSquares.containsKey(target)) {
             validateAttack(source, target);
@@ -86,7 +83,7 @@ public class ChessBoard {
         }
     }
 
-    private void validateTeam(final Square source) {
+    private void validateTeam(final Square source, final Team currentTeam) {
         final Piece sourcePiece = pieceSquares.get(source);
         if (sourcePiece.isOppositeTeam(currentTeam)) {
             throw new IllegalArgumentException("상대방의 말을 움직일 수 없습니다.");
@@ -130,11 +127,13 @@ public class ChessBoard {
                 .anyMatch(pieceSquares::containsKey);
     }
 
-    public Map<Square, Piece> getPieceSquares() {
-        return Collections.unmodifiableMap(pieceSquares);
+    public boolean isKingDead() {
+        return pieceSquares.values().stream()
+                .filter(piece -> piece.pieceType() == PieceType.KING)
+                .count() < KING_COUNT;
     }
 
-    public Team currentTeam() {
-        return currentTeam;
+    public Map<Square, Piece> getPieceSquares() {
+        return Collections.unmodifiableMap(pieceSquares);
     }
 }

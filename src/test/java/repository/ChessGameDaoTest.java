@@ -1,8 +1,8 @@
 package repository;
 
 import connection.ChessConnectionGenerator;
-import domain.ChessGameStatus;
 import domain.Team;
+import domain.game.ChessGameStatus;
 import domain.player.Player;
 import domain.player.PlayerName;
 import org.junit.jupiter.api.AfterEach;
@@ -58,7 +58,7 @@ class ChessGameDaoTest {
         final ChessGameStatus status = ChessGameStatus.RUNNING;
 
         // when
-        final int gameId = chessGameDao.addGame(blackPlayer, whitePlayer, team, status);
+        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, team, status);
 
         // then
         final Team currentTeam = chessGameDao.findCurrentTeamById(gameId).get();
@@ -76,7 +76,7 @@ class ChessGameDaoTest {
         // given
         final Player blackPlayer = new Player(pobi);
         final Player whitePlayer = new Player(json);
-        final int gameId = chessGameDao.addGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
+        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
 
         // when
         final Team team = Team.BLACK;
@@ -94,7 +94,7 @@ class ChessGameDaoTest {
         // given
         final Player blackPlayer = new Player(pobi);
         final Player whitePlayer = new Player(json);
-        final int gameId = chessGameDao.addGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
+        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
 
         // when
         final ChessGameStatus status = ChessGameStatus.END;

@@ -17,18 +17,18 @@ public class WinStatusSummary {
         this.drawCount = drawCount;
     }
 
-    public static WinStatusSummary of(final List<WinStatus> blackWinStatuses, final List<WinStatus> whiteWinStatuses) {
-        final int countWin = countWinStatus(blackWinStatuses, WinStatus.BLACK_WIN)
-                + countWinStatus(whiteWinStatuses, WinStatus.WHITE_WIN);
-        final int countLose = countWinStatus(blackWinStatuses, WinStatus.WHITE_WIN)
-                + countWinStatus(whiteWinStatuses, WinStatus.BLACK_WIN);
-        final int countDraw = countWinStatus(blackWinStatuses, WinStatus.DRAW)
-                + countWinStatus(blackWinStatuses, WinStatus.DRAW);
+    public static WinStatusSummary of(final List<WinStatus> blackStatuses, final List<WinStatus> whiteStatuses) {
+        final int countWin = countStatus(blackStatuses, WinStatus.BLACK_WIN)
+                + countStatus(whiteStatuses, WinStatus.WHITE_WIN);
+        final int countLose = countStatus(blackStatuses, WinStatus.WHITE_WIN)
+                + countStatus(whiteStatuses, WinStatus.BLACK_WIN);
+        final int countDraw = countStatus(blackStatuses, WinStatus.DRAW)
+                + countStatus(whiteStatuses, WinStatus.DRAW);
 
         return new WinStatusSummary(countWin, countLose, countDraw);
     }
 
-    private static int countWinStatus(final List<WinStatus> winStatuses, final WinStatus winStatus) {
+    private static int countStatus(final List<WinStatus> winStatuses, final WinStatus winStatus) {
         return (int) winStatuses.stream()
                 .filter(status -> status == winStatus)
                 .count();

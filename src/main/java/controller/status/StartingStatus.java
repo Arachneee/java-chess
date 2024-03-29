@@ -10,7 +10,7 @@ public class StartingStatus implements ChessProgramStatus {
     }
 
     @Override
-    public int gameId() {
+    public int getGameId() {
         throw new UnsupportedOperationException("사용할 수 없는 기능입니다.");
     }
 

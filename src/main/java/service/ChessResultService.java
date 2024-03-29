@@ -1,17 +1,15 @@
 package service;
 
 import domain.WinStatus;
-import domain.piece.Piece;
+import domain.chessboard.ChessBoard;
 import domain.player.Player;
 import domain.result.ChessGameResult;
 import domain.result.WinStatusSummary;
-import domain.square.Square;
 import repository.ChessBoardDao;
 import repository.ChessResultDao;
 
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
 public class ChessResultService {
 
@@ -29,9 +27,9 @@ public class ChessResultService {
     }
 
     public ChessGameResult calculateResult(final int gameId) {
-        final Map<Square, Piece> pieceSquares = chessBoardDao.findAll(gameId);
+        final ChessBoard chessBoard = chessBoardDao.findChessBoard(gameId);
 
-        return ChessGameResult.from(pieceSquares);
+        return ChessGameResult.from(chessBoard.getPieceSquares());
     }
 
     public WinStatusSummary findGameRecord(final Player player) {

@@ -38,7 +38,7 @@ public class ChessBoardDao {
         }
     }
 
-    public Map<Square, Piece> findAll(final int gameId) {
+    public ChessBoard findChessBoard(final int gameId) {
         final var query = "SELECT * FROM board WHERE game_id = (?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, gameId);
@@ -58,7 +58,7 @@ public class ChessBoardDao {
                         ));
             }
 
-            return squarePieces;
+            return new ChessBoard(squarePieces);
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }

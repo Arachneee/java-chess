@@ -3,7 +3,6 @@ package controller;
 import controller.command.*;
 import controller.status.ChessProgramStatus;
 import controller.status.StartingStatus;
-import service.ChessBoardService;
 import service.ChessGameService;
 import service.ChessResultService;
 import service.PlayerService;
@@ -46,21 +45,20 @@ public class ChessFrontController {
         private CommandRouter(final Connection connection) {
             final PlayerService playerService = new PlayerService(connection);
             final ChessGameService chessGameService = new ChessGameService(connection);
-            final ChessBoardService chessBoardService = new ChessBoardService(connection);
             final ChessResultService chessResultService = new ChessResultService(connection);
 
             final QuitCommand quitCommand = new QuitCommand();
 
             this.startingRouter = Map.of(
-                    "start", new StartCommand(playerService, chessGameService, chessBoardService),
-                    "continue", new ContinueCommand(chessGameService, chessBoardService),
+                    "start", new StartCommand(playerService, chessGameService),
+                    "continue", new ContinueCommand(chessGameService),
                     "record", new RecordCommand(playerService, chessResultService),
                     "quit", quitCommand);
 
             this.runningRouter = Map.of(
-                    "move", new MoveCommand(chessBoardService, chessGameService, chessResultService),
-                    "status", new StatusCommand(chessResultService, chessGameService),
-                    "end", new EndCommand(chessGameService, chessResultService),
+                    "move", new MoveCommand(chessGameService),
+                    "status", new StatusCommand(chessGameService),
+                    "end", new EndCommand(chessGameService),
                     "quit", quitCommand);
         }
 
@@ -73,8 +71,7 @@ public class ChessFrontController {
             if (status.isStarting()) {
                 return startingRouter.get(commandKey).executeStart();
             }
-
-            return runningRouter.get(commandKey).executePlay(commands, status.gameId());
+            return runningRouter.get(commandKey).executePlay(commands, status.getGameId());
         }
 
         private void validateCommand(final String commandKey, final ChessProgramStatus status) {

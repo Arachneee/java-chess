@@ -16,7 +16,7 @@ class WinStatusSummaryTest {
     void summary() {
         // given
         final List<WinStatus> blackWinStatus = List.of(WinStatus.BLACK_WIN, WinStatus.WHITE_WIN,
-                WinStatus.DRAW, WinStatus.BLACK_WIN);
+                WinStatus.DRAW, WinStatus.DRAW, WinStatus.BLACK_WIN);
         final List<WinStatus> whiteWinStatus = List.of(WinStatus.BLACK_WIN, WinStatus.WHITE_WIN,
                 WinStatus.DRAW, WinStatus.BLACK_WIN, WinStatus.WHITE_WIN);
 
@@ -24,6 +24,6 @@ class WinStatusSummaryTest {
         final WinStatusSummary winStatusSummary = WinStatusSummary.of(blackWinStatus, whiteWinStatus);
 
         // then
-        assertThat(winStatusSummary).isEqualTo(new WinStatusSummary(4, 3, 2));
+        assertThat(winStatusSummary).isEqualTo(new WinStatusSummary(4, 3, 3));
     }
 }

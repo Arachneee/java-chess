@@ -4,19 +4,17 @@ import controller.status.ChessProgramStatus;
 import controller.status.StartingStatus;
 import domain.result.ChessGameResult;
 import service.ChessGameService;
-import service.ChessResultService;
 import view.OutputView;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class EndCommand implements Command {
 
     private final ChessGameService chessGameService;
-    private final ChessResultService chessResultService;
 
-    public EndCommand(final ChessGameService chessGameService, final ChessResultService chessResultService) {
+    public EndCommand(final ChessGameService chessGameService) {
         this.chessGameService = chessGameService;
-        this.chessResultService = chessResultService;
     }
 
     @Override
@@ -25,13 +23,15 @@ public class EndCommand implements Command {
     }
 
     @Override
-    public ChessProgramStatus executePlay(final List<String> playCommandFormat, final int gameId) {
+    public ChessProgramStatus executePlay(final List<String> playCommandFormat, final int gameId) throws SQLException {
         chessGameService.endGame(gameId);
-        chessResultService.saveResult(gameId);
 
-        final ChessGameResult chessGameResult = chessResultService.calculateResult(gameId);
+        final ChessGameResult chessGameResult = chessGameService.calculateResult(gameId);
         OutputView.printStatus(chessGameResult);
 
         return new StartingStatus();
     }
 }
+
+
+

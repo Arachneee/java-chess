@@ -1,9 +1,9 @@
 package repository;
 
 import connection.ChessConnectionGenerator;
-import domain.ChessGameStatus;
 import domain.Team;
 import domain.chessboard.ChessBoard;
+import domain.game.ChessGameStatus;
 import domain.piece.Piece;
 import domain.player.Player;
 import domain.player.PlayerName;
@@ -38,7 +38,7 @@ class ChessBoardDaoTest {
                 playerDao.add(pobi);
                 playerDao.add(json);
 
-                gameId = chessGameDao.addGame(new Player(pobi), new Player(json),
+                gameId = chessGameDao.createGame(new Player(pobi), new Player(json),
                         Team.WHITE, ChessGameStatus.RUNNING);
             }
         } catch (final SQLException e) {
@@ -66,9 +66,9 @@ class ChessBoardDaoTest {
         chessBoardDao.addBoard(chessBoard, gameId);
 
         // when
-        final Map<Square, Piece> results = chessBoardDao.findAll(gameId);
+        final ChessBoard chessBoard1 = chessBoardDao.findChessBoard(gameId);
 
         // then
-        assertThat(results.entrySet()).isEqualTo(pieceSquares.entrySet());
+        assertThat(chessBoard1.getPieceSquares().entrySet()).isEqualTo(pieceSquares.entrySet());
     }
 }
