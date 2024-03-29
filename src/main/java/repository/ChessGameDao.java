@@ -66,16 +66,16 @@ public class ChessGameDao {
             preparedStatement.setInt(1, gameId);
             final var resultSet = preparedStatement.executeQuery();
 
-
             if (resultSet.next()) {
-                return Optional.of(new ChessGame(
-                        resultSet.getInt("G.id"),
-                        new Player(new PlayerName(resultSet.getString("BP.name"))),
-                        new Player(new PlayerName(resultSet.getString("WP.name"))),
-                        chessBoard,
-                        ChessGameStatus.valueOf(resultSet.getString("G.status")),
-                        Team.valueOf(resultSet.getString("G.current_team"))
-                ));
+                return Optional.of(ChessGame.ChessGameBuilder.builder()
+                        .id(resultSet.getInt("G.id"))
+                        .blackPlayer(new Player(new PlayerName(resultSet.getString("BP.name"))))
+                        .whitePlayer(new Player(new PlayerName(resultSet.getString("WP.name"))))
+                        .chessBoard(chessBoard)
+                        .status(ChessGameStatus.valueOf(resultSet.getString("G.status")))
+                        .currentTeam(Team.valueOf(resultSet.getString("G.current_team")))
+                        .build()
+                );
             }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
@@ -102,7 +102,6 @@ public class ChessGameDao {
                                 resultSet.getString("team")
                         ));
             }
-
             return new ChessBoard(squarePieces);
         } catch (final SQLException e) {
             throw new RuntimeException(e);
@@ -160,29 +159,6 @@ public class ChessGameDao {
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Optional<Player> findPlayer(final int gameId, final Team team) {
-        final var query = "SELECT P.name FROM game as G LEFT JOIN player as P ON " +
-                (team == Team.WHITE ? "G.white_player_id" : "G.black_player_id") +
-                "= P.id " +
-                "WHERE G.id = (?)";
-
-        try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
-
-            final var resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                return Optional.of(
-                        new Player(new PlayerName(resultSet.getString("name")))
-                );
-            }
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return Optional.empty();
     }
 
     public void update(final ChessGame chessGame) {

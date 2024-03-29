@@ -77,20 +77,6 @@ public class ChessBoardDao {
         }
     }
 
-    public int countKing(final int gameId) {
-        final var query = "SELECT count(id) AS 'king_count' FROM board WHERE game_id = (?) AND piece_type = 'KING'";
-        try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
-
-            final var resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-
-            return resultSet.getInt("king_count");
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void deleteByGameId(final int gameId) {
         final var query = "DELETE FROM board WHERE game_id = (?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
