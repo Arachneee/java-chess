@@ -3,16 +3,13 @@ package service;
 import domain.ChessGameStatus;
 import domain.Team;
 import domain.chessboard.ChessBoard;
-import domain.piece.Piece;
 import domain.player.Player;
-import domain.square.Square;
 import repository.ChessBoardDao;
 import repository.ChessGameDao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public class ChessGameService {
 
@@ -29,12 +26,10 @@ public class ChessGameService {
     public int createNewGame(final Player blackPlayer, final Player whitePlayer) throws SQLException {
         try {
             connection.setAutoCommit(false);
+            final ChessBoard chessBoard = ChessBoard.create();
 
             final int id = chessGameDao.addGame(blackPlayer, whitePlayer, Team.WHITE, ChessGameStatus.RUNNING);
-
-            final ChessBoard chessBoard = ChessBoard.create();
-            final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
-            chessBoardDao.addAll(pieceSquares, id);
+            chessBoardDao.addBoard(chessBoard, id);
 
             connection.commit();
             return id;

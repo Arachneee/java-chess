@@ -11,7 +11,6 @@ import repository.ChessGameDao;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 
 public class ChessBoardService {
 
@@ -33,7 +32,8 @@ public class ChessBoardService {
             final ChessBoard chessBoard = createChessBoard(gameId);
             chessBoard.move(source, target);
 
-            updateChessBoardDao(gameId, source, target);
+            chessBoardDao.deleteByGameId(gameId);
+            chessBoardDao.addBoard(chessBoard, gameId);
             chessGameDao.updateCurrentTeam(gameId, chessBoard.currentTeam());
 
             if (isKingDead(gameId)) {
@@ -54,20 +54,6 @@ public class ChessBoardService {
                 .orElseThrow(() -> new IllegalArgumentException("진행 중인 게임이 없습니다."));
 
         return new ChessBoard(pieceSquares, currentTeam);
-    }
-
-    private void updateChessBoardDao(final int gameId, final Square source, final Square target) {
-        final Piece piece = chessBoardDao.findBySquare(source, gameId)
-                .orElseThrow(() -> new IllegalArgumentException("Source에 기물이 없습니다."));
-
-        final Optional<Piece> targetPiece = chessBoardDao.findBySquare(target, gameId);
-        if (targetPiece.isEmpty()) {
-            chessBoardDao.addSquarePiece(target, piece, gameId);
-        } else {
-            chessBoardDao.update(target, piece, gameId);
-        }
-
-        chessBoardDao.deleteBySquare(source, gameId);
     }
 
     public void endGame(final int gameId) {
