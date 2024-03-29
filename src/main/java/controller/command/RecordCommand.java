@@ -9,9 +9,7 @@ import service.PlayerService;
 import view.InputView;
 import view.OutputView;
 
-import java.util.List;
-
-public class RecordCommand implements Command {
+public class RecordCommand extends StartingCommand {
 
     private final PlayerService playerService;
     private final ChessResultService chessResultService;
@@ -22,17 +20,12 @@ public class RecordCommand implements Command {
     }
 
     @Override
-    public ChessProgramStatus executeStart() {
+    public ChessProgramStatus executeStarting() {
         final Player player = readPlayer();
         final WinStatusSummary winStatusSummary = chessResultService.findGameRecord(player);
         OutputView.printGameRecord(winStatusSummary);
 
         return new StartingStatus();
-    }
-
-    @Override
-    public ChessProgramStatus executePlay(final List<String> command, final int gameId) {
-        throw new UnsupportedOperationException("사용할 수 없는 기능입니다.");
     }
 
     private Player readPlayer() {

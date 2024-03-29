@@ -2,6 +2,7 @@ package controller;
 
 import controller.command.*;
 import controller.status.ChessProgramStatus;
+import controller.status.EndStatus;
 import controller.status.StartingStatus;
 import service.ChessGameService;
 import service.ChessResultService;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class ChessFrontController {
 
@@ -37,53 +39,51 @@ public class ChessFrontController {
 
     private static class CommandRouter {
 
+        private static final Pattern MOVE_FORMAT = Pattern.compile("^move [a-z]\\d [a-z]\\d$");
+        private static final String COMMAND_DELIMITER = " ";
         private static final int COMMAND_KEY_INDEX = 0;
 
-        private final Map<String, Command> startingRouter;
-        private final Map<String, Command> runningRouter;
+        private final Map<String, Command> router;
 
         private CommandRouter(final Connection connection) {
             final PlayerService playerService = new PlayerService(connection);
             final ChessGameService chessGameService = new ChessGameService(connection);
             final ChessResultService chessResultService = new ChessResultService(connection);
 
-            final QuitCommand quitCommand = new QuitCommand();
-
-            this.startingRouter = Map.of(
-                    "start", new StartCommand(playerService, chessGameService),
-                    "continue", new ContinueCommand(chessGameService),
+            this.router = Map.of(
+                    "start", new NewGameCommand(playerService, chessGameService),
+                    "continue", new ContinueGameCommand(chessGameService),
                     "record", new RecordCommand(playerService, chessResultService),
-                    "quit", quitCommand);
-
-            this.runningRouter = Map.of(
                     "move", new MoveCommand(chessGameService),
                     "status", new StatusCommand(chessGameService),
-                    "end", new EndCommand(chessGameService),
-                    "quit", quitCommand);
+                    "end", new EndCommand(chessGameService));
         }
 
-        private ChessProgramStatus execute(final String command, final ChessProgramStatus status) throws SQLException {
-            final List<String> commands = Arrays.asList(command.split(" "));
-            final String commandKey = commands.get(COMMAND_KEY_INDEX);
-
-            validateCommand(commandKey, status);
-
-            if (status.isStarting()) {
-                return startingRouter.get(commandKey).executeStart();
+        private ChessProgramStatus execute(final String commandInput, final ChessProgramStatus status) throws SQLException {
+            if ("quit".equals(commandInput)) {
+                return new EndStatus();
             }
-            return runningRouter.get(commandKey).executePlay(commands, status.getGameId());
+            validateCommandInput(commandInput);
+
+            final List<String> commandInputs = Arrays.asList(commandInput.split(COMMAND_DELIMITER));
+            final String commandKey = commandInputs.get(COMMAND_KEY_INDEX);
+
+            final Command command = router.get(commandKey);
+            if (status.isStarting() && command.isStarting()) {
+                return command.executeStarting();
+            }
+            if (status.isRunning() && command.isRunning()) {
+                return command.executeRunning(commandInputs, status.getGameId());
+            }
+
+            throw new IllegalArgumentException("잘못된 커맨드입니다.");
         }
 
-        private void validateCommand(final String commandKey, final ChessProgramStatus status) {
-            if (status.isStarting() && !startingRouter.containsKey(commandKey)) {
-                throw new IllegalArgumentException("잘못된 커맨드입니다.");
+        private void validateCommandInput(final String commandInput) {
+            if (router.containsKey(commandInput) || MOVE_FORMAT.matcher(commandInput).matches()) {
+                return;
             }
-            if (status.isRunning() && !runningRouter.containsKey(commandKey)) {
-                throw new IllegalArgumentException("잘못된 커맨드입니다.");
-            }
-            if (!status.isNotEnd()) {
-                throw new IllegalStateException("프로그램이 종료 상태입니다.");
-            }
+            throw new IllegalArgumentException("잘못된 커맨드입니다.");
         }
     }
 }

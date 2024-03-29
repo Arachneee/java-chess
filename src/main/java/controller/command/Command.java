@@ -8,7 +8,11 @@ import java.util.List;
 
 public interface Command {
 
-    ChessProgramStatus executeStart() throws SQLException;
+    ChessProgramStatus executeStarting() throws SQLException;
 
-    ChessProgramStatus executePlay(List<String> inputs, int gameId) throws SQLException;
+    ChessProgramStatus executeRunning(List<String> inputs, int gameId) throws SQLException;
+
+    boolean isStarting();
+
+    boolean isRunning();
 }
