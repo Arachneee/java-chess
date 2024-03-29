@@ -84,9 +84,7 @@ public class ChessGameDao {
     }
 
     private ChessBoard findChessBoard(final int gameId) {
-        final var query = "SELECT * FROM game AS G " +
-                "RIGHT JOIN board AS B ON G.id = B.game_id " +
-                "WHERE G.id = (?)";
+        final var query = "SELECT * FROM board WHERE game_id = (?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, gameId);
 
@@ -96,12 +94,12 @@ public class ChessGameDao {
 
             while (resultSet.next()) {
                 squarePieces.put(Square.of(
-                                resultSet.getString("B.file"),
-                                resultSet.getString("B.rank")
+                                resultSet.getString("file"),
+                                resultSet.getString("rank")
                         ),
                         PieceMaker.of(
-                                resultSet.getString("B.piece_type"),
-                                resultSet.getString("B.team")
+                                resultSet.getString("piece_type"),
+                                resultSet.getString("team")
                         ));
             }
             return new ChessBoard(squarePieces);
