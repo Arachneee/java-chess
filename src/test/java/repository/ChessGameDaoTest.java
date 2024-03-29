@@ -38,13 +38,15 @@ class ChessGameDaoTest {
     }
 
     @AfterEach
-    void after() {
+    void after() throws SQLException {
         try {
             if (connection != null) {
                 connection.rollback();
             }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 

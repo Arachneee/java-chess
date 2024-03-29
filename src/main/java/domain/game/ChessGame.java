@@ -87,4 +87,51 @@ public class ChessGame {
     public Team getCurrentTeam() {
         return currentTeam;
     }
+
+    public static class ChessGameBuilder {
+        int id;
+        Player blackPlayer;
+        Player whitePlayer;
+        ChessBoard chessBoard;
+        ChessGameStatus status;
+        Team currentTeam;
+
+        public static ChessGameBuilder builder() {
+            return new ChessGameBuilder();
+        }
+
+        public ChessGameBuilder id(final int id) {
+            this.id = id;
+            return this;
+        }
+
+        public ChessGameBuilder blackPlayer(final Player blackPlayer) {
+            this.blackPlayer = blackPlayer;
+            return this;
+        }
+
+        public ChessGameBuilder whitePlayer(final Player whitePlayer) {
+            this.whitePlayer = whitePlayer;
+            return this;
+        }
+
+        public ChessGameBuilder chessBoard(final ChessBoard chessBoard) {
+            this.chessBoard = chessBoard;
+            return this;
+        }
+
+        public ChessGameBuilder status(final ChessGameStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public ChessGameBuilder currentTeam(final Team currentTeam) {
+            this.currentTeam = currentTeam;
+            return this;
+        }
+
+        public ChessGame build() {
+            return new ChessGame(id, blackPlayer, whitePlayer, chessBoard, status, currentTeam);
+        }
+    }
 }

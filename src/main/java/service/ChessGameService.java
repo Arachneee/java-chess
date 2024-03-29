@@ -35,8 +35,18 @@ public class ChessGameService {
             final ChessBoard chessBoard = ChessBoard.create();
             chessBoardService.addBoard(chessBoard, gameId);
 
+            final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
+                    .id(gameId)
+                    .blackPlayer(blackPlayer)
+                    .whitePlayer(whitePlayer)
+                    .chessBoard(chessBoard)
+                    .status(ChessGameStatus.RUNNING)
+                    .currentTeam(Team.WHITE)
+                    .build();
+
             connection.commit();
-            return new ChessGame(gameId, blackPlayer, whitePlayer, chessBoard, ChessGameStatus.RUNNING, Team.WHITE);
+
+            return chessGame;
         } catch (final Exception e) {
             connection.rollback();
             throw new IllegalArgumentException(e.getMessage());
