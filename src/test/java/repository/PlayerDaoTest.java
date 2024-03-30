@@ -1,6 +1,6 @@
 package repository;
 
-import connection.ChessConnectionGenerator;
+import connection.TestChessConnectionGenerator;
 import domain.player.Player;
 import domain.player.PlayerName;
 import org.junit.jupiter.api.AfterEach;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PlayerDaoTest {
 
-    final Connection connection = ChessConnectionGenerator.getTestConnection();
+    final Connection connection = TestChessConnectionGenerator.getConnection();
     final PlayerDao playerDao = new PlayerDao(connection);
 
     @BeforeEach

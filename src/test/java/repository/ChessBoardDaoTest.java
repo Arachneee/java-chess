@@ -1,6 +1,6 @@
 package repository;
 
-import connection.ChessConnectionGenerator;
+import connection.TestChessConnectionGenerator;
 import domain.Team;
 import domain.chessboard.ChessBoard;
 import domain.game.ChessGame;
@@ -21,7 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ChessBoardDaoTest {
-    final Connection connection = ChessConnectionGenerator.getTestConnection();
+    final Connection connection = TestChessConnectionGenerator.getConnection();
     final PlayerDao playerDao = new PlayerDao(connection);
     final ChessGameDao chessGameDao = new ChessGameDao(connection);
     final ChessBoardDao chessBoardDao = new ChessBoardDao(connection);

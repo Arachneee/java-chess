@@ -1,6 +1,6 @@
 package repository;
 
-import connection.ChessConnectionGenerator;
+import connection.TestChessConnectionGenerator;
 import domain.Team;
 import domain.chessboard.ChessBoard;
 import domain.game.ChessGame;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ChessGameDaoTest {
 
-    final Connection connection = ChessConnectionGenerator.getTestConnection();
+    final Connection connection = TestChessConnectionGenerator.getConnection();
     final ChessGameDao chessGameDao = new ChessGameDao(connection);
     final ChessBoardDao chessBoardDao = new ChessBoardDao(connection);
     final PlayerDao playerDao = new PlayerDao(connection);
