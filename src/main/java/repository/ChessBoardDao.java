@@ -40,7 +40,7 @@ public class ChessBoardDao {
         }
     }
 
-    public ChessBoard findChessBoard(final int gameId) {
+    public ChessBoard findByGameId(final int gameId) {
         final var query = "SELECT * FROM board WHERE game_id = (?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, gameId);

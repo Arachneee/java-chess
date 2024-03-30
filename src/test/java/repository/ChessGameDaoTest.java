@@ -27,6 +27,7 @@ class ChessGameDaoTest {
     final PlayerDao playerDao = new PlayerDao(connection);
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");
+    int gameId;
 
     @BeforeEach
     void before() {
@@ -35,6 +36,18 @@ class ChessGameDaoTest {
                 connection.setAutoCommit(false);
                 playerDao.add(pobi);
                 playerDao.add(json);
+
+                gameId = chessGameDao.findAutoIncrement();
+                final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
+                        .id(gameId)
+                        .blackPlayer(new Player(pobi))
+                        .whitePlayer(new Player(json))
+                        .chessBoard(ChessBoard.create())
+                        .status(ChessGameStatus.RUNNING)
+                        .currentTeam(Team.WHITE)
+                        .build();
+
+                chessGameDao.create(chessGame);
             }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
@@ -56,48 +69,18 @@ class ChessGameDaoTest {
         }
     }
 
-    @DisplayName("게임을 추가하고 찾는다.")
-    @Test
-    void create() {
-        // given
-        final Player blackPlayer = new Player(pobi);
-        final Player whitePlayer = new Player(json);
-        final Team team = Team.WHITE;
-        final ChessGameStatus status = ChessGameStatus.RUNNING;
-
-        // when
-        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, team, status);
-
-        // then
-        final ChessGame chessGame = chessGameDao.findRunningGameById(gameId).get();
-
-        assertAll(
-                () -> assertThat(chessGame.getBlackPlayer()).isEqualTo(blackPlayer),
-                () -> assertThat(chessGame.getWhitePlayer()).isEqualTo(whitePlayer),
-                () -> assertThat(chessGame.getCurrentTeam()).isEqualTo(team),
-                () -> assertThat(chessGame.getStatus()).isEqualTo(status)
-        );
-    }
-
     @DisplayName("게임의 상태를 업데이트 한다.")
     @Test
     void update() {
         // given
-        final Player blackPlayer = new Player(pobi);
-        final Player whitePlayer = new Player(json);
-        final Team team = Team.WHITE;
-        final ChessGameStatus status = ChessGameStatus.RUNNING;
-        final int gameId = chessGameDao.createGame(blackPlayer, whitePlayer, team, status);
-        chessBoardDao.addBoard(ChessBoard.create(), gameId);
-
-        final ChessGame chessGame = chessGameDao.findRunningGameById(gameId).get();
+        final ChessGame chessGame = chessGameDao.findByIdAndStatus(gameId, ChessGameStatus.RUNNING).get();
         chessGame.move(Square.of("B", "TWO"), Square.of("B", "FOUR"));
 
         // when
-        chessGameDao.updateChessGame(chessGame);
+        chessGameDao.update(chessGame);
 
         // then
-        final ChessGame findChessGame = chessGameDao.findRunningGameById(gameId).get();
+        final ChessGame findChessGame = chessGameDao.findByIdAndStatus(gameId, ChessGameStatus.RUNNING).get();
 
         assertAll(
                 () -> assertThat(findChessGame.getCurrentTeam()).isEqualTo(chessGame.getCurrentTeam()),

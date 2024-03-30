@@ -3,6 +3,7 @@ package repository;
 import connection.ChessConnectionGenerator;
 import domain.Team;
 import domain.chessboard.ChessBoard;
+import domain.game.ChessGame;
 import domain.game.ChessGameStatus;
 import domain.piece.Piece;
 import domain.player.Player;
@@ -37,8 +38,17 @@ class ChessBoardDaoTest {
                 playerDao.add(pobi);
                 playerDao.add(json);
 
-                gameId = chessGameDao.createGame(new Player(pobi), new Player(json),
-                        Team.WHITE, ChessGameStatus.RUNNING);
+                gameId = chessGameDao.findAutoIncrement();
+                final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
+                        .id(gameId)
+                        .blackPlayer(new Player(pobi))
+                        .whitePlayer(new Player(json))
+                        .chessBoard(ChessBoard.create())
+                        .status(ChessGameStatus.RUNNING)
+                        .currentTeam(Team.WHITE)
+                        .build();
+
+                chessGameDao.create(chessGame);
             }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
@@ -65,7 +75,7 @@ class ChessBoardDaoTest {
         chessBoardDao.addBoard(chessBoard, gameId);
 
         // when
-        final ChessBoard chessBoard1 = chessBoardDao.findChessBoard(gameId);
+        final ChessBoard chessBoard1 = chessBoardDao.findByGameId(gameId);
 
         // then
         assertThat(chessBoard1.getPieceSquares().entrySet()).isEqualTo(pieceSquares.entrySet());
@@ -82,6 +92,6 @@ class ChessBoardDaoTest {
         chessBoardDao.deleteByGameId(gameId);
 
         // then
-        assertThat(chessBoardDao.findChessBoard(gameId).getPieceSquares()).isEmpty();
+        assertThat(chessBoardDao.findByGameId(gameId).getPieceSquares()).isEmpty();
     }
 }

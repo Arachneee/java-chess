@@ -4,57 +4,44 @@ import domain.Team;
 import domain.chessboard.ChessBoard;
 import domain.game.ChessGame;
 import domain.game.ChessGameStatus;
-import domain.piece.Piece;
-import domain.piece.PieceMaker;
 import domain.player.Player;
 import domain.player.PlayerName;
-import domain.square.Square;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class ChessGameDao {
 
     private final Connection connection;
+    private final ChessBoardDao chessBoardDao;
 
     public ChessGameDao(final Connection connection) {
         this.connection = connection;
+        this.chessBoardDao = new ChessBoardDao(connection);
     }
 
-    public int createGame(
-            final Player blackPlayer,
-            final Player whitePlayer,
-            final Team currentTeam,
-            final ChessGameStatus status
-    ) {
+    public void create(final ChessGame chessGame) {
         final var query = "INSERT INTO game (current_team, status, black_player_id, white_player_id) VALUES(?, ?, " +
                 "(SELECT id FROM player WHERE name = ?), " +
                 "(SELECT id FROM player WHERE name = ?))";
-        try (final var preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, currentTeam.name());
-            preparedStatement.setString(2, status.name());
-            preparedStatement.setString(3, blackPlayer.getName());
-            preparedStatement.setString(4, whitePlayer.getName());
+        try (final var preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, chessGame.getCurrentTeam().name());
+            preparedStatement.setString(2, chessGame.getStatus().name());
+            preparedStatement.setString(3, chessGame.getBlackPlayer().getName());
+            preparedStatement.setString(4, chessGame.getWhitePlayer().getName());
 
             preparedStatement.executeUpdate();
-
-            try (final ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return (int) generatedKeys.getLong(1);
-                } else {
-                    throw new SQLException("Creating game failed, no ID obtained.");
-                }
-            }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
+        chessBoardDao.addBoard(chessGame.getChessBoard(), chessGame.getId());
     }
 
-    public Optional<ChessGame> findGameById(final int id) {
-        final ChessBoard chessBoard = findChessBoard(id);
+    public Optional<ChessGame> findById(final int id) {
+        final ChessBoard chessBoard = chessBoardDao.findByGameId(id);
 
         final var query = "SELECT * FROM game AS G " +
                 "LEFT JOIN player AS BP " +
@@ -83,40 +70,15 @@ public class ChessGameDao {
         return Optional.empty();
     }
 
-    private ChessBoard findChessBoard(final int gameId) {
-        final var query = "SELECT * FROM board WHERE game_id = (?)";
-        try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
-
-            final var resultSet = preparedStatement.executeQuery();
-
-            final Map<Square, Piece> squarePieces = new HashMap<>();
-
-            while (resultSet.next()) {
-                squarePieces.put(Square.of(
-                                resultSet.getString("file"),
-                                resultSet.getString("rank")
-                        ),
-                        PieceMaker.of(
-                                resultSet.getString("piece_type"),
-                                resultSet.getString("team")
-                        ));
-            }
-            return new ChessBoard(squarePieces);
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Optional<ChessGame> findRunningGameById(final int id) {
-        final ChessBoard chessBoard = findRunningChessBoard(id);
+    public Optional<ChessGame> findByIdAndStatus(final int id, final ChessGameStatus chessGameStatus) {
+        final ChessBoard chessBoard = chessBoardDao.findByGameId(id);
 
         final var query = "SELECT * FROM game AS G " +
                 "LEFT JOIN player AS BP " +
                 "ON G.black_player_id = BP.id " +
                 "LEFT JOIN player AS WP " +
                 "ON G.white_player_id = WP.id " +
-                "WHERE G.id = (?) AND G.status = 'RUNNING'";
+                "WHERE G.id = (?) AND G.status = '" + chessGameStatus.name() + "'";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, id);
             final var resultSet = preparedStatement.executeQuery();
@@ -138,35 +100,8 @@ public class ChessGameDao {
         return Optional.empty();
     }
 
-    private ChessBoard findRunningChessBoard(final int id) {
-        final var query = "SELECT * FROM game AS G " +
-                "RIGHT JOIN board AS B ON G.id = B.game_id " +
-                "WHERE G.id = (?) AND G.status = 'RUNNING'";
-        try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
-
-            final var resultSet = preparedStatement.executeQuery();
-
-            final Map<Square, Piece> squarePieces = new HashMap<>();
-
-            while (resultSet.next()) {
-                squarePieces.put(Square.of(
-                                resultSet.getString("B.file"),
-                                resultSet.getString("B.rank")
-                        ),
-                        PieceMaker.of(
-                                resultSet.getString("B.piece_type"),
-                                resultSet.getString("B.team")
-                        ));
-            }
-            return new ChessBoard(squarePieces);
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<Integer> findRunningGameIds() {
-        final var query = "SELECT id FROM game WHERE status = 'RUNNING'";
+    public List<Integer> findIdsByStatus(final ChessGameStatus chessGameStatus) {
+        final var query = "SELECT id FROM game WHERE status = '" + chessGameStatus.name() + "'";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             final var resultSet = preparedStatement.executeQuery();
 
@@ -181,7 +116,24 @@ public class ChessGameDao {
         }
     }
 
-    public void updateChessGame(final ChessGame chessGame) {
+    public int findAutoIncrement() {
+        final var query = "SELECT AUTO_INCREMENT " +
+                "FROM information_schema.tables " +
+                "WHERE table_schema = DATABASE() " +
+                "AND table_name = 'game'";
+        try (final var preparedStatement = connection.prepareStatement(query)) {
+            final var resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
+    }
+
+    public void update(final ChessGame chessGame) {
         final var query = "UPDATE game SET " +
                 "current_team = (?), status = (?) " +
                 "WHERE id = (?)";

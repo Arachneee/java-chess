@@ -1,7 +1,9 @@
 package service;
 
 import domain.WinStatus;
+import domain.chessboard.ChessBoard;
 import domain.player.Player;
+import domain.result.ChessGameResult;
 import domain.result.WinStatusSummary;
 import repository.ChessResultDao;
 
@@ -21,5 +23,14 @@ public class ChessResultService {
         final List<WinStatus> whiteWinStatuses = chessResultDao.findWhiteWinStatus(player);
 
         return WinStatusSummary.of(blackWinStatuses, whiteWinStatuses);
+    }
+
+    public void saveResult(final int gameId, final ChessBoard chessBoard) {
+        final ChessGameResult chessGameResult = calculateResult(chessBoard);
+        chessResultDao.create(chessGameResult, gameId);
+    }
+
+    public ChessGameResult calculateResult(final ChessBoard chessBoard) {
+        return ChessGameResult.from(chessBoard.getPieceSquares());
     }
 }
