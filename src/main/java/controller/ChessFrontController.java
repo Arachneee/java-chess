@@ -73,7 +73,7 @@ public class ChessFrontController {
                 return command.executeStarting();
             }
             if (status.isRunning() && command.isRunning()) {
-                return command.executeRunning(commandInputs, status.getGameId());
+                return command.executeRunning(commandInputs, status.getGameNumber());
             }
 
             throw new IllegalArgumentException("잘못된 커맨드입니다.");

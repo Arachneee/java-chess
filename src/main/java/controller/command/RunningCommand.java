@@ -1,9 +1,7 @@
 package controller.command;
 
 import controller.status.ChessProgramStatus;
-import domain.result.ChessGameResult;
 import service.ChessGameService;
-import view.OutputView;
 
 public abstract class RunningCommand implements Command {
 
@@ -26,11 +24,6 @@ public abstract class RunningCommand implements Command {
     @Override
     public boolean isRunning() {
         return true;
-    }
-
-    protected void printScoreStatus(final int gameId) {
-        final ChessGameResult chessGameResult = chessGameService.calculateResult(gameId);
-        OutputView.printStatus(chessGameResult);
     }
 
     protected ChessGameService chessGameService() {

@@ -24,38 +24,41 @@ public class ChessGameDao {
     }
 
     public void create(final ChessGame chessGame) {
-        final var query = "INSERT INTO game (current_team, status, black_player_id, white_player_id) VALUES(?, ?, " +
+        final var query = "INSERT INTO game (number, current_team, status, black_player_id, white_player_id) " +
+                "VALUES(?, ?, ?, " +
                 "(SELECT id FROM player WHERE name = ?), " +
                 "(SELECT id FROM player WHERE name = ?))";
         try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, chessGame.getCurrentTeam().name());
-            preparedStatement.setString(2, chessGame.getStatus().name());
-            preparedStatement.setString(3, chessGame.getBlackPlayer().getName());
-            preparedStatement.setString(4, chessGame.getWhitePlayer().getName());
+            preparedStatement.setInt(1, chessGame.getNumber());
+            preparedStatement.setString(2, chessGame.getCurrentTeam().name());
+            preparedStatement.setString(3, chessGame.getStatus().name());
+            preparedStatement.setString(4, chessGame.getBlackPlayer().getName());
+            preparedStatement.setString(5, chessGame.getWhitePlayer().getName());
 
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
-        chessBoardDao.addBoard(chessGame.getChessBoard(), chessGame.getId());
+
+        chessBoardDao.addBoard(chessGame.getChessBoard(), chessGame.getNumber());
     }
 
-    public Optional<ChessGame> findById(final int id) {
-        final ChessBoard chessBoard = chessBoardDao.findByGameId(id);
+    public Optional<ChessGame> findByNumber(final int number) {
+        final ChessBoard chessBoard = chessBoardDao.findByGameNumber(number);
 
         final var query = "SELECT * FROM game AS G " +
                 "LEFT JOIN player AS BP " +
                 "ON G.black_player_id = BP.id " +
                 "LEFT JOIN player AS WP " +
                 "ON G.white_player_id = WP.id " +
-                "WHERE G.id = (?)";
+                "WHERE G.number = (?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(1, number);
             final var resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 return Optional.of(ChessGame.ChessGameBuilder.builder()
-                        .id(resultSet.getInt("G.id"))
+                        .number(resultSet.getInt("G.number"))
                         .blackPlayer(new Player(new PlayerName(resultSet.getString("BP.name"))))
                         .whitePlayer(new Player(new PlayerName(resultSet.getString("WP.name"))))
                         .chessBoard(chessBoard)
@@ -70,22 +73,22 @@ public class ChessGameDao {
         return Optional.empty();
     }
 
-    public Optional<ChessGame> findByIdAndStatus(final int id, final ChessGameStatus chessGameStatus) {
-        final ChessBoard chessBoard = chessBoardDao.findByGameId(id);
+    public Optional<ChessGame> findByNumberAndStatus(final int number, final ChessGameStatus chessGameStatus) {
+        final ChessBoard chessBoard = chessBoardDao.findByGameNumber(number);
 
         final var query = "SELECT * FROM game AS G " +
                 "LEFT JOIN player AS BP " +
                 "ON G.black_player_id = BP.id " +
                 "LEFT JOIN player AS WP " +
                 "ON G.white_player_id = WP.id " +
-                "WHERE G.id = (?) AND G.status = '" + chessGameStatus.name() + "'";
+                "WHERE G.number = (?) AND G.status = '" + chessGameStatus.name() + "'";
         try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(1, number);
             final var resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 return Optional.of(ChessGame.ChessGameBuilder.builder()
-                        .id(resultSet.getInt("G.id"))
+                        .number(resultSet.getInt("G.number"))
                         .blackPlayer(new Player(new PlayerName(resultSet.getString("BP.name"))))
                         .whitePlayer(new Player(new PlayerName(resultSet.getString("WP.name"))))
                         .chessBoard(chessBoard)
@@ -100,27 +103,24 @@ public class ChessGameDao {
         return Optional.empty();
     }
 
-    public List<Integer> findIdsByStatus(final ChessGameStatus chessGameStatus) {
-        final var query = "SELECT id FROM game WHERE status = '" + chessGameStatus.name() + "'";
+    public List<Integer> findNumbersByStatus(final ChessGameStatus chessGameStatus) {
+        final var query = "SELECT number FROM game WHERE status = '" + chessGameStatus.name() + "'";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             final var resultSet = preparedStatement.executeQuery();
 
-            final List<Integer> ids = new ArrayList<>();
+            final List<Integer> numbers = new ArrayList<>();
 
             while (resultSet.next()) {
-                ids.add(resultSet.getInt("id"));
+                numbers.add(resultSet.getInt("number"));
             }
-            return ids;
+            return numbers;
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public int findAutoIncrement() {
-        final var query = "SELECT AUTO_INCREMENT " +
-                "FROM information_schema.tables " +
-                "WHERE table_schema = DATABASE() " +
-                "AND table_name = 'game'";
+    public int findMaxNumber() {
+        final var query = "SELECT MAX(number) FROM game";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             final var resultSet = preparedStatement.executeQuery();
 
@@ -136,12 +136,30 @@ public class ChessGameDao {
     public void update(final ChessGame chessGame) {
         final var query = "UPDATE game SET " +
                 "current_team = (?), status = (?) " +
-                "WHERE id = (?)";
+                "WHERE number = (?)";
 
         try (final var preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, chessGame.getCurrentTeam().name());
             preparedStatement.setString(2, chessGame.getStatus().name());
-            preparedStatement.setInt(3, chessGame.getId());
+            preparedStatement.setInt(3, chessGame.getNumber());
+
+            preparedStatement.executeUpdate();
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        chessBoardDao.deleteByGameNumber(chessGame.getNumber());
+        chessBoardDao.addBoard(chessGame.getChessBoard(), chessGame.getNumber());
+    }
+
+    public void updateStatus(final ChessGame chessGame) {
+        final var query = "UPDATE game SET " +
+                "status = (?) " +
+                "WHERE number = (?)";
+
+        try (final var preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, chessGame.getStatus().name());
+            preparedStatement.setInt(2, chessGame.getNumber());
 
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {

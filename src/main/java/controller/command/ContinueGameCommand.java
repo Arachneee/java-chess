@@ -19,18 +19,18 @@ public class ContinueGameCommand extends StartingCommand {
 
     @Override
     public ChessProgramStatus executeStarting() {
-        final List<Integer> runningGame = chessGameService.findRunningGameIds();
-        final ChessGame chessGame = findRunningGame(runningGame);
+        final List<Integer> runningGameNumbers = chessGameService.findRunningGameNumbers();
+        final ChessGame chessGame = findRunningGame(runningGameNumbers);
         printStartGame(chessGame);
 
         return new RunningStatus(chessGame);
     }
 
-    private ChessGame findRunningGame(final List<Integer> runningGame) {
+    private ChessGame findRunningGame(final List<Integer> runningGameNumbers) {
         while (true) {
             try {
-                final int input = InputView.readContinueGame(runningGame);
-                return chessGameService.findRunningGameById(input);
+                final int input = InputView.readContinueGame(runningGameNumbers);
+                return chessGameService.findRunningGameByNumber(input);
             } catch (final IllegalArgumentException e) {
                 OutputView.printError(e.getMessage());
             }

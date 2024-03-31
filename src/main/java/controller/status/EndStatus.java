@@ -8,7 +8,7 @@ public class EndStatus implements ChessProgramStatus {
     }
 
     @Override
-    public int getGameId() {
+    public int getGameNumber() {
         throw new UnsupportedOperationException("사용할 수 없는 기능입니다.");
     }
 

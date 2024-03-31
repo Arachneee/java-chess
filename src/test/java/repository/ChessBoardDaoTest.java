@@ -26,7 +26,7 @@ class ChessBoardDaoTest {
     final ChessGameDao chessGameDao = new ChessGameDao(connection);
     final ChessBoardDao chessBoardDao = new ChessBoardDao(connection);
 
-    int gameId;
+    int gameNumber;
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");
 
@@ -38,9 +38,9 @@ class ChessBoardDaoTest {
                 playerDao.add(pobi);
                 playerDao.add(json);
 
-                gameId = chessGameDao.findAutoIncrement();
+                gameNumber = chessGameDao.findMaxNumber();
                 final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
-                        .id(gameId)
+                        .number(gameNumber)
                         .blackPlayer(new Player(pobi))
                         .whitePlayer(new Player(json))
                         .chessBoard(ChessBoard.create())
@@ -72,10 +72,10 @@ class ChessBoardDaoTest {
         // given
         final ChessBoard chessBoard = ChessBoard.create();
         final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
-        chessBoardDao.addBoard(chessBoard, gameId);
+        chessBoardDao.addBoard(chessBoard, gameNumber);
 
         // when
-        final ChessBoard chessBoard1 = chessBoardDao.findByGameId(gameId);
+        final ChessBoard chessBoard1 = chessBoardDao.findByGameNumber(gameNumber);
 
         // then
         assertThat(chessBoard1.getPieceSquares().entrySet()).isEqualTo(pieceSquares.entrySet());
@@ -86,12 +86,12 @@ class ChessBoardDaoTest {
     void createAndDelete() {
         // given
         final ChessBoard chessBoard = ChessBoard.create();
-        chessBoardDao.addBoard(chessBoard, gameId);
+        chessBoardDao.addBoard(chessBoard, gameNumber);
 
         // when
-        chessBoardDao.deleteByGameId(gameId);
+        chessBoardDao.deleteByGameNumber(gameNumber);
 
         // then
-        assertThat(chessBoardDao.findByGameId(gameId).getPieceSquares()).isEmpty();
+        assertThat(chessBoardDao.findByGameNumber(gameNumber).getPieceSquares()).isEmpty();
     }
 }

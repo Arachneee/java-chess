@@ -13,25 +13,25 @@ import java.util.Map;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
-public class ChessGameResult {
+public class ChessResult {
 
     private static final Score SAME_FILE_PAWN_SCORE = new Score(0.5);
 
     private final Map<Team, Score> teamScores;
     private final WinStatus winStatus;
 
-    private ChessGameResult(final Map<Team, Score> teamScores, final WinStatus winStatus) {
+    private ChessResult(final Map<Team, Score> teamScores, final WinStatus winStatus) {
         this.teamScores = teamScores;
         this.winStatus = winStatus;
     }
 
-    public static ChessGameResult from(final Map<Square, Piece> pieceSquares) {
+    public static ChessResult from(final Map<Square, Piece> pieceSquares) {
         final Score whiteScore = sumTotalScore(pieceSquares, Team.WHITE);
         final Score blackScore = sumTotalScore(pieceSquares, Team.BLACK);
 
         final WinStatus winStatus = WinStatus.of(whiteScore, blackScore);
 
-        return new ChessGameResult(Map.of(Team.WHITE, whiteScore, Team.BLACK, blackScore), winStatus);
+        return new ChessResult(Map.of(Team.WHITE, whiteScore, Team.BLACK, blackScore), winStatus);
     }
 
     private static Score sumTotalScore(final Map<Square, Piece> pieceSquares, final Team team) {

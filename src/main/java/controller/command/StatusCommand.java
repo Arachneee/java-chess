@@ -4,6 +4,7 @@ import controller.status.ChessProgramStatus;
 import controller.status.RunningStatus;
 import domain.game.ChessGame;
 import service.ChessGameService;
+import view.OutputView;
 
 import java.util.List;
 
@@ -14,10 +15,10 @@ public class StatusCommand extends RunningCommand {
     }
 
     @Override
-    public ChessProgramStatus executeRunning(final List<String> playCommandFormat, final int gameId) {
-        final ChessGame chessGame = chessGameService().findRunningGameById(gameId);
+    public ChessProgramStatus executeRunning(final List<String> playCommandFormat, final int gameNumber) {
+        final ChessGame chessGame = chessGameService().findRunningGameByNumber(gameNumber);
 
-        printScoreStatus(gameId);
+        OutputView.printStatus(chessGame.getChessResult());
 
         return new RunningStatus(chessGame);
     }

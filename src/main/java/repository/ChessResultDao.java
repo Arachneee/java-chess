@@ -2,7 +2,7 @@ package repository;
 
 import domain.WinStatus;
 import domain.player.Player;
-import domain.result.ChessGameResult;
+import domain.result.ChessResult;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,18 +17,19 @@ public class ChessResultDao {
         this.connection = connection;
     }
 
-    public void create(final ChessGameResult chessGameResult, final int gameId) {
-        final var query = "INSERT INTO result VALUES(null, ?," +
-                "(SELECT black_player_id FROM game WHERE id = ?), " +
-                "(SELECT white_player_id FROM game WHERE id = ?), " +
+    public void create(final ChessResult chessResult, final int gameNumber) {
+        final var query = "INSERT INTO result VALUES(null, " +
+                "(SELECT id FROM game WHERE number = ?)," +
+                "(SELECT black_player_id FROM game WHERE number = ?), " +
+                "(SELECT white_player_id FROM game WHERE number = ?), " +
                 "?, ?, ?)";
         try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
-            preparedStatement.setInt(2, gameId);
-            preparedStatement.setInt(3, gameId);
-            preparedStatement.setDouble(4, chessGameResult.getBlackScore());
-            preparedStatement.setDouble(5, chessGameResult.getWhiteScore());
-            preparedStatement.setString(6, chessGameResult.getWinStatus().name());
+            preparedStatement.setInt(1, gameNumber);
+            preparedStatement.setInt(2, gameNumber);
+            preparedStatement.setInt(3, gameNumber);
+            preparedStatement.setDouble(4, chessResult.getBlackScore());
+            preparedStatement.setDouble(5, chessResult.getWhiteScore());
+            preparedStatement.setString(6, chessResult.getWinStatus().name());
 
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {

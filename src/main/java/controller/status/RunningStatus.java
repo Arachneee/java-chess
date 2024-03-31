@@ -23,8 +23,8 @@ public class RunningStatus implements ChessProgramStatus {
     }
 
     @Override
-    public int getGameId() {
-        return chessGame.getId();
+    public int getGameNumber() {
+        return chessGame.getNumber();
     }
 
     @Override

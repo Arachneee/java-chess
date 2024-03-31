@@ -4,7 +4,7 @@ public interface ChessProgramStatus {
 
     String readCommand();
 
-    int getGameId();
+    int getGameNumber();
 
     boolean isNotEnd();
 

@@ -18,8 +18,9 @@ public class ChessBoardDao {
         this.connection = connection;
     }
 
-    public void addBoard(final ChessBoard chessBoard, final int gameId) {
-        final var query = "INSERT INTO board (file, `rank`, piece_type, team, game_id) VALUES (?, ?, ?, ?, ?)";
+    public void addBoard(final ChessBoard chessBoard, final int gameNumber) {
+        final var query = "INSERT INTO board (file, `rank`, piece_type, team, game_id) VALUES (?, ?, ?, ?, " +
+                "(SELECT id FROM game WHERE number = (?)))";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             for (final var entry : chessBoard.getPieceSquares().entrySet()) {
                 final var square = entry.getKey();
@@ -29,7 +30,7 @@ public class ChessBoardDao {
                 preparedStatement.setString(2, square.rank().name());
                 preparedStatement.setString(3, piece.pieceType().name());
                 preparedStatement.setString(4, piece.team().name());
-                preparedStatement.setInt(5, gameId);
+                preparedStatement.setInt(5, gameNumber);
 
                 preparedStatement.addBatch();
             }
@@ -40,10 +41,11 @@ public class ChessBoardDao {
         }
     }
 
-    public ChessBoard findByGameId(final int gameId) {
-        final var query = "SELECT * FROM board WHERE game_id = (?)";
+    public ChessBoard findByGameNumber(final int gameNumber) {
+        final var query = "SELECT * FROM board " +
+                "WHERE game_id = (SELECT id FROM game WHERE number = (?))";
         try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
+            preparedStatement.setInt(1, gameNumber);
 
             final var resultSet = preparedStatement.executeQuery();
 
@@ -66,10 +68,11 @@ public class ChessBoardDao {
         }
     }
 
-    public void deleteByGameId(final int gameId) {
-        final var query = "DELETE FROM board WHERE game_id = (?)";
+    public void deleteByGameNumber(final int gameNumber) {
+        final var query = "DELETE FROM board " +
+                "WHERE game_id = (SELECT id FROM game WHERE number = (?))";
         try (final var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, gameId);
+            preparedStatement.setInt(1, gameNumber);
 
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {

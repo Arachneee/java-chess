@@ -27,7 +27,7 @@ class ChessGameDaoTest {
     final PlayerDao playerDao = new PlayerDao(connection);
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");
-    int gameId;
+    int gameNumber;
 
     @BeforeEach
     void before() {
@@ -37,9 +37,9 @@ class ChessGameDaoTest {
                 playerDao.add(pobi);
                 playerDao.add(json);
 
-                gameId = chessGameDao.findAutoIncrement();
+                gameNumber = chessGameDao.findMaxNumber();
                 final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
-                        .id(gameId)
+                        .number(gameNumber)
                         .blackPlayer(new Player(pobi))
                         .whitePlayer(new Player(json))
                         .chessBoard(ChessBoard.create())
@@ -73,14 +73,14 @@ class ChessGameDaoTest {
     @Test
     void update() {
         // given
-        final ChessGame chessGame = chessGameDao.findByIdAndStatus(gameId, ChessGameStatus.RUNNING).get();
+        final ChessGame chessGame = chessGameDao.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING).get();
         chessGame.move(Square.of("B", "TWO"), Square.of("B", "FOUR"));
 
         // when
         chessGameDao.update(chessGame);
 
         // then
-        final ChessGame findChessGame = chessGameDao.findByIdAndStatus(gameId, ChessGameStatus.RUNNING).get();
+        final ChessGame findChessGame = chessGameDao.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING).get();
 
         assertAll(
                 () -> assertThat(findChessGame.getCurrentTeam()).isEqualTo(chessGame.getCurrentTeam()),

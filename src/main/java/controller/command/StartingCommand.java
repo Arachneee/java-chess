@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class StartingCommand implements Command {
 
     @Override
-    public ChessProgramStatus executeRunning(final List<String> command, final int gameId) {
+    public ChessProgramStatus executeRunning(final List<String> command, final int gameNumber) {
         throw new UnsupportedOperationException("사용할 수 없는 기능입니다.");
     }
 
@@ -30,7 +30,7 @@ public abstract class StartingCommand implements Command {
         final Player whitePlayer = chessGame.getWhitePlayer();
         final ChessBoard chessBoard = chessGame.getChessBoard();
 
-        OutputView.printGameOption(chessGame.getId(), blackPlayer.getName(), whitePlayer.getName());
+        OutputView.printGameOption(chessGame.getNumber(), blackPlayer.getName(), whitePlayer.getName());
         OutputView.printChessBoard(chessBoard.getPieceSquares());
     }
 }

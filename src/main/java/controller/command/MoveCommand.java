@@ -24,18 +24,18 @@ public class MoveCommand extends RunningCommand {
     }
 
     @Override
-    public ChessProgramStatus executeRunning(final List<String> command, final int gameId) throws SQLException {
+    public ChessProgramStatus executeRunning(final List<String> command, final int gameNumber) throws SQLException {
         validateCommand(command);
         final Square source = Square.from(command.get(SOURCE_INDEX));
         final Square target = Square.from(command.get(TARGET_INDEX));
 
-        chessGameService().move(gameId, source, target);
+        chessGameService().move(gameNumber, source, target);
 
-        final ChessGame chessGame = chessGameService().findGameById(gameId);
+        final ChessGame chessGame = chessGameService().findGameByNumber(gameNumber);
         printChessBoard(chessGame);
 
         if (chessGame.getStatus() == ChessGameStatus.END) {
-            printScoreStatus(gameId);
+            OutputView.printStatus(chessGame.getChessResult());
             return new StartingStatus();
         }
         return new RunningStatus(chessGame);

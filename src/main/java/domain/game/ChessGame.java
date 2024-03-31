@@ -3,29 +3,32 @@ package domain.game;
 import domain.Team;
 import domain.chessboard.ChessBoard;
 import domain.player.Player;
+import domain.result.ChessResult;
 import domain.square.Square;
 
 public class ChessGame {
 
-    private final int id;
+    private final int number;
     private final Player blackPlayer;
     private final Player whitePlayer;
     private final ChessBoard chessBoard;
+    private ChessResult chessResult;
     private ChessGameStatus status;
     private Team currentTeam;
 
     public ChessGame(
-            final int id,
+            final int number,
             final Player blackPlayer,
             final Player whitePlayer,
             final ChessBoard chessBoard,
             final ChessGameStatus status,
             final Team currentTeam
     ) {
-        this.id = id;
+        this.number = number;
         this.blackPlayer = blackPlayer;
         this.whitePlayer = whitePlayer;
         this.chessBoard = chessBoard;
+        this.chessResult = ChessResult.from(chessBoard.getPieceSquares());
         this.status = status;
         this.currentTeam = currentTeam;
     }
@@ -38,6 +41,8 @@ public class ChessGame {
         if (chessBoard.isKingDead()) {
             end();
         }
+
+        chessResult = ChessResult.from(chessBoard.getPieceSquares());
     }
 
     public void end() {
@@ -55,8 +60,8 @@ public class ChessGame {
         return blackPlayer;
     }
 
-    public int getId() {
-        return id;
+    public int getNumber() {
+        return number;
     }
 
     public Player getBlackPlayer() {
@@ -71,6 +76,10 @@ public class ChessGame {
         return chessBoard;
     }
 
+    public ChessResult getChessResult() {
+        return chessResult;
+    }
+
     public ChessGameStatus getStatus() {
         return status;
     }
@@ -80,7 +89,7 @@ public class ChessGame {
     }
 
     public static class ChessGameBuilder {
-        int id;
+        int number;
         Player blackPlayer;
         Player whitePlayer;
         ChessBoard chessBoard;
@@ -91,8 +100,8 @@ public class ChessGame {
             return new ChessGameBuilder();
         }
 
-        public ChessGameBuilder id(final int id) {
-            this.id = id;
+        public ChessGameBuilder number(final int number) {
+            this.number = number;
             return this;
         }
 
@@ -122,7 +131,7 @@ public class ChessGame {
         }
 
         public ChessGame build() {
-            return new ChessGame(id, blackPlayer, whitePlayer, chessBoard, status, currentTeam);
+            return new ChessGame(number, blackPlayer, whitePlayer, chessBoard, status, currentTeam);
         }
     }
 }

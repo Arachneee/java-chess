@@ -10,7 +10,7 @@ public interface Command {
 
     ChessProgramStatus executeStarting() throws SQLException;
 
-    ChessProgramStatus executeRunning(List<String> inputs, int gameId) throws SQLException;
+    ChessProgramStatus executeRunning(List<String> inputs, int gameNumber) throws SQLException;
 
     boolean isStarting();
 

@@ -1,7 +1,7 @@
 package view;
 
 import domain.piece.Piece;
-import domain.result.ChessGameResult;
+import domain.result.ChessResult;
 import domain.result.WinStatusSummary;
 import domain.square.File;
 import domain.square.Rank;
@@ -53,10 +53,10 @@ public class OutputView {
         return PieceFormat.EMPTY_PIECE;
     }
 
-    public static void printStatus(final ChessGameResult chessGameResult) {
+    public static void printStatus(final ChessResult chessResult) {
         System.out.printf("%n블랙 : %.1f%n화이트 : %.1f%n승패 : %s%n%n",
-                chessGameResult.getBlackScore(), chessGameResult.getWhiteScore(),
-                WinStatusFormat.formatOf(chessGameResult.getWinStatus()));
+                chessResult.getBlackScore(), chessResult.getWhiteScore(),
+                WinStatusFormat.formatOf(chessResult.getWinStatus()));
     }
 
     public static void printGameRecord(final WinStatusSummary winStatusSummary) {

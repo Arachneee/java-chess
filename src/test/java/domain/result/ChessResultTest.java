@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ChessGameResultTest {
+class ChessResultTest {
 
     @DisplayName("남아있는 기물의 점수 합을 계산한다.")
     @Test
@@ -32,10 +32,10 @@ class ChessGameResultTest {
                 new Square(File.D, Rank.FOUR), new Pawn(Team.WHITE)
         );
 
-        final ChessGameResult chessGameResult = ChessGameResult.from(pieceSquares);
+        final ChessResult chessResult = ChessResult.from(pieceSquares);
 
         // when
-        final double blackScore = chessGameResult.getBlackScore();
+        final double blackScore = chessResult.getBlackScore();
 
         // then
         assertThat(blackScore).isEqualTo(20);
@@ -60,10 +60,10 @@ class ChessGameResultTest {
                 new Square(File.D, Rank.FOUR), new Pawn(Team.WHITE)
         );
 
-        final ChessGameResult chessGameResult = ChessGameResult.from(pieceSquares);
+        final ChessResult chessResult = ChessResult.from(pieceSquares);
 
         // when
-        final double blackScore = chessGameResult.getBlackScore();
+        final double blackScore = chessResult.getBlackScore();
 
         // then
         assertThat(blackScore).isEqualTo(19.5);
@@ -87,10 +87,10 @@ class ChessGameResultTest {
                 new Square(File.D, Rank.FOUR), new Pawn(Team.WHITE)
         );
 
-        final ChessGameResult chessGameResult = ChessGameResult.from(pieceSquares);
+        final ChessResult chessResult = ChessResult.from(pieceSquares);
 
         // when
-        final double blackScore = chessGameResult.getBlackScore();
+        final double blackScore = chessResult.getBlackScore();
 
         // then
         assertThat(blackScore).isEqualTo(0);
