@@ -54,9 +54,9 @@ public class ChessFrontController {
                     "start", new NewGameCommand(playerService, chessGameService),
                     "continue", new ContinueGameCommand(chessGameService),
                     "record", new RecordCommand(playerService, chessResultService),
-                    "move", new MoveCommand(chessGameService),
-                    "status", new StatusCommand(chessGameService),
-                    "end", new EndCommand(chessGameService));
+                    "move", new MoveCommand(chessGameService, chessResultService),
+                    "status", new StatusCommand(chessGameService, chessResultService),
+                    "end", new EndCommand(chessGameService, chessResultService));
         }
 
         private ChessProgramStatus execute(final String commandInput, final ChessProgramStatus status) throws SQLException {

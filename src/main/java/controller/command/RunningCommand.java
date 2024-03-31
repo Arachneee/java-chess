@@ -2,13 +2,16 @@ package controller.command;
 
 import controller.status.ChessProgramStatus;
 import service.ChessGameService;
+import service.ChessResultService;
 
 public abstract class RunningCommand implements Command {
 
     private final ChessGameService chessGameService;
+    private final ChessResultService chessResultService;
 
-    protected RunningCommand(final ChessGameService chessGameService) {
+    protected RunningCommand(final ChessGameService chessGameService, final ChessResultService chessResultService) {
         this.chessGameService = chessGameService;
+        this.chessResultService = chessResultService;
     }
 
     @Override
@@ -28,5 +31,9 @@ public abstract class RunningCommand implements Command {
 
     protected ChessGameService chessGameService() {
         return chessGameService;
+    }
+
+    protected ChessResultService chessResultService() {
+        return chessResultService;
     }
 }

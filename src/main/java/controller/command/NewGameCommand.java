@@ -3,8 +3,8 @@ package controller.command;
 import controller.status.ChessProgramStatus;
 import controller.status.RunningStatus;
 import domain.Team;
-import domain.game.ChessGame;
 import domain.player.Player;
+import dto.ChessGameDto;
 import service.ChessGameService;
 import service.PlayerService;
 import view.InputView;
@@ -27,10 +27,12 @@ public class NewGameCommand extends StartingCommand {
         final Player blackPlayer = roadPlayer(Team.BLACK);
         final Player whitePlayer = roadPlayer(Team.WHITE);
 
-        final ChessGame chessGame = chessGameService.createNewGame(blackPlayer, whitePlayer);
-        printStartGame(chessGame);
+        final int gameId = chessGameService.createNewGame(blackPlayer, whitePlayer);
 
-        return new RunningStatus(chessGame);
+        final ChessGameDto chessGame = chessGameService.getGameDto(gameId);
+        OutputView.printStartGame(chessGame);
+
+        return new RunningStatus(gameId, chessGameService);
 
     }
 

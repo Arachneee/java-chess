@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.groupingBy;
 public class ChessResult {
 
     private static final Score SAME_FILE_PAWN_SCORE = new Score(0.5);
+
     private final Score blackScore;
     private final Score whiteScore;
     private final WinStatus winStatus;

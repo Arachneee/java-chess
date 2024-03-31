@@ -6,6 +6,7 @@ import domain.result.WinStatusSummary;
 import domain.square.File;
 import domain.square.Rank;
 import domain.square.Square;
+import dto.ChessGameDto;
 import view.format.PieceFormat;
 import view.format.WinStatusFormat;
 
@@ -18,7 +19,12 @@ public class OutputView {
     private OutputView() {
     }
 
-    public static void printGameOption(final int gameId, final String blackPlayerName, final String whitePlayerName) {
+    public static void printStartGame(final ChessGameDto chessGame) {
+        printGameOption(chessGame.gameNumber(), chessGame.blackPlayerName(), chessGame.whitePlayerName());
+        printChessBoard(chessGame.board());
+    }
+
+    private static void printGameOption(final int gameId, final String blackPlayerName, final String whitePlayerName) {
         System.out.printf("""
                 > %d번 게임을 시작합니다.
                 > 게임 점수 보기 : status

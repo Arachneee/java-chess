@@ -24,8 +24,8 @@ public class InputView {
         return SCANNER.nextLine();
     }
 
-    public static String readGameCommand(final Team team, final String playerName) {
-        System.out.printf("%n%s팀 %s의 차례입니다.%n", team.name(), playerName);
+    public static String readGameCommand(final String team, final String playerName) {
+        System.out.printf("%n%s팀 %s의 차례입니다.%n", team, playerName);
 
         return SCANNER.nextLine();
     }

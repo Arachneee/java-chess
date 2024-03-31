@@ -6,6 +6,7 @@ import domain.game.ChessGame;
 import domain.game.ChessGameStatus;
 import domain.player.Player;
 import domain.square.Square;
+import dto.ChessGameDto;
 import repository.ChessGameRepository;
 
 import java.sql.Connection;
@@ -16,15 +17,13 @@ public class ChessGameService {
 
     private final Connection connection;
     private final ChessGameRepository chessGameRepository;
-    private final ChessResultService chessResultService;
 
     public ChessGameService(final Connection connection) {
         this.connection = connection;
         this.chessGameRepository = new ChessGameRepository(connection);
-        this.chessResultService = new ChessResultService(connection);
     }
 
-    public ChessGame createNewGame(final Player blackPlayer, final Player whitePlayer) throws SQLException {
+    public int createNewGame(final Player blackPlayer, final Player whitePlayer) throws SQLException {
         try {
             connection.setAutoCommit(false);
 
@@ -41,23 +40,13 @@ public class ChessGameService {
             chessGameRepository.create(chessGame);
 
             connection.commit();
-            return chessGame;
+            return gameNumber;
         } catch (final Exception e) {
             connection.rollback();
             throw new RuntimeException("서버 오류입니다.");
         } finally {
             connection.setAutoCommit(true);
         }
-    }
-
-    public ChessGame findGameByNumber(final int gameNumber) {
-        return chessGameRepository.findByNumber(gameNumber)
-                .orElseThrow(() -> new IllegalArgumentException("게임을 찾을 수 없습니다."));
-    }
-
-    public ChessGame findRunningGameByNumber(final int gameNumber) {
-        return chessGameRepository.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING)
-                .orElseThrow(() -> new IllegalArgumentException("진행 중인 게임을 찾을 수 없습니다."));
     }
 
     public List<Integer> findRunningGameNumbers() {
@@ -72,14 +61,12 @@ public class ChessGameService {
         try {
             connection.setAutoCommit(false);
 
-            final ChessGame chessGame = findRunningGameByNumber(gameNumber);
+            final ChessGame chessGame = chessGameRepository.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING)
+                    .orElseThrow(() -> new IllegalArgumentException("진행 중인 게임을 찾을 수 없습니다."));
+
             chessGame.move(source, target);
 
             chessGameRepository.update(chessGame);
-
-            if (chessGame.isEnd()) {
-                chessResultService.saveResult(gameNumber, chessGame.getChessResult());
-            }
 
             connection.commit();
         } catch (final Exception e) {
@@ -94,11 +81,12 @@ public class ChessGameService {
         try {
             connection.setAutoCommit(false);
 
-            final ChessGame chessGame = findRunningGameByNumber(gameNumber);
+            final ChessGame chessGame = chessGameRepository.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING)
+                    .orElseThrow(() -> new IllegalArgumentException("진행 중인 게임을 찾을 수 없습니다."));
+
             chessGame.end();
 
             chessGameRepository.updateStatus(chessGame);
-            chessResultService.saveResult(gameNumber, chessGame.getChessResult());
 
             connection.commit();
         } catch (final Exception e) {
@@ -106,5 +94,12 @@ public class ChessGameService {
         } finally {
             connection.setAutoCommit(true);
         }
+    }
+
+    public ChessGameDto getGameDto(final int gameNumber) {
+        final ChessGame chessGame = chessGameRepository.findByNumber(gameNumber)
+                .orElseThrow(() -> new IllegalArgumentException("게임을 찾을 수 없습니다."));
+
+        return ChessGameDto.from(chessGame);
     }
 }

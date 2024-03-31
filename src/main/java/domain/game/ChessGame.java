@@ -4,7 +4,6 @@ import domain.Team;
 import domain.chessboard.ChessBoard;
 import domain.piece.Piece;
 import domain.player.Player;
-import domain.result.ChessResult;
 import domain.square.Square;
 
 public class ChessGame {
@@ -13,7 +12,6 @@ public class ChessGame {
     private final Player blackPlayer;
     private final Player whitePlayer;
     private final ChessBoard chessBoard;
-    private ChessResult chessResult;
     private ChessGameStatus status;
     private Team currentTeam;
 
@@ -29,7 +27,6 @@ public class ChessGame {
         this.blackPlayer = blackPlayer;
         this.whitePlayer = whitePlayer;
         this.chessBoard = chessBoard;
-        this.chessResult = ChessResult.from(chessBoard.getPieceSquares());
         this.status = status;
         this.currentTeam = currentTeam;
     }
@@ -44,8 +41,6 @@ public class ChessGame {
         if (chessBoard.isKingDead()) {
             end();
         }
-
-        chessResult = ChessResult.from(chessBoard.getPieceSquares());
     }
 
     private void validateTeam(final Square source) {
@@ -58,10 +53,6 @@ public class ChessGame {
 
     public void end() {
         status = ChessGameStatus.END;
-    }
-
-    public boolean isEnd() {
-        return status == ChessGameStatus.END;
     }
 
     public Player getCurrentPlayer() {
@@ -87,9 +78,6 @@ public class ChessGame {
         return chessBoard;
     }
 
-    public ChessResult getChessResult() {
-        return chessResult;
-    }
 
     public ChessGameStatus getStatus() {
         return status;

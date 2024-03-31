@@ -1,10 +1,6 @@
 package controller.command;
 
 import controller.status.ChessProgramStatus;
-import domain.chessboard.ChessBoard;
-import domain.game.ChessGame;
-import domain.player.Player;
-import view.OutputView;
 
 import java.util.List;
 
@@ -23,14 +19,5 @@ public abstract class StartingCommand implements Command {
     @Override
     public boolean isRunning() {
         return false;
-    }
-
-    protected void printStartGame(final ChessGame chessGame) {
-        final Player blackPlayer = chessGame.getBlackPlayer();
-        final Player whitePlayer = chessGame.getWhitePlayer();
-        final ChessBoard chessBoard = chessGame.getChessBoard();
-
-        OutputView.printGameOption(chessGame.getNumber(), blackPlayer.getName(), whitePlayer.getName());
-        OutputView.printChessBoard(chessBoard.getPieceSquares());
     }
 }
