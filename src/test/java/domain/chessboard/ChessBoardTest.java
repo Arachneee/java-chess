@@ -1,6 +1,5 @@
 package domain.chessboard;
 
-import domain.Team;
 import domain.piece.Piece;
 import domain.square.File;
 import domain.square.Rank;
@@ -21,16 +20,15 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 class ChessBoardTest {
 
-    @DisplayName("Source에 기물이 없으면 움직일 수 없다.")
+    @DisplayName("Source에 기물이 없으면 예외를 발생한다.")
     @Test
     void validateEmptySource() {
         // given
         final ChessBoard chessBoard = ChessBoard.create();
         final Square source = new Square(File.A, Rank.THREE);
-        final Square target = new Square(File.A, Rank.FOUR);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(source, target, Team.WHITE))
+        assertThatThrownBy(() -> chessBoard.findPiece(source))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 위치에 기물이 없습니다.");
     }
@@ -43,23 +41,9 @@ class ChessBoardTest {
         final Square source = new Square(File.A, Rank.TWO);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(source, source, Team.WHITE))
+        assertThatThrownBy(() -> chessBoard.move(source, source))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("제자리 이동은 불가합니다.");
-    }
-
-    @DisplayName("White팀이 처음 시작하고 현재 턴인 팀의 기물만 움직일 수 있다.")
-    @Test
-    void validateTeam() {
-        // given
-        final ChessBoard chessBoard = ChessBoard.create();
-        final Square blackPawnSource = new Square(File.A, Rank.SEVEN);
-        final Square target = new Square(File.A, Rank.SIX);
-
-        // when & then
-        assertThatThrownBy(() -> chessBoard.move(blackPawnSource, target, Team.WHITE))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("상대방의 말을 움직일 수 없습니다.");
     }
 
     @DisplayName("기물에 맞지 않는 움직임으로 이동할 수 없다. 폰은 공격이 아닌경우 대각선으로 이동할 수 없다.")
@@ -71,7 +55,7 @@ class ChessBoardTest {
         final Square target = new Square(File.C, Rank.THREE);
 
         // when & then
-        assertThatThrownBy(() -> chessBoard.move(pawnSource, target, Team.WHITE))
+        assertThatThrownBy(() -> chessBoard.move(pawnSource, target))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("움직일 수 없는 경로입니다.");
 
@@ -115,7 +99,7 @@ class ChessBoardTest {
                     final Piece whitePawn = chessBoard.getPieceSquares().get(source);
 
                     // when
-                    chessBoard.move(source, target, Team.WHITE);
+                    chessBoard.move(source, target);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -143,7 +127,7 @@ class ChessBoardTest {
                     final Piece blackKnight = chessBoard.getPieceSquares().get(source);
 
                     // when
-                    chessBoard.move(source, target, Team.BLACK);
+                    chessBoard.move(source, target);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -157,7 +141,7 @@ class ChessBoardTest {
                     final Square target = new Square(File.B, Rank.SIX);
 
                     // when & then
-                    assertThatThrownBy(() -> chessBoard.move(pawnSource, target, Team.WHITE))
+                    assertThatThrownBy(() -> chessBoard.move(pawnSource, target))
                             .isInstanceOf(IllegalArgumentException.class)
                             .hasMessage("움직일 수 없는 경로입니다.");
                 }),
@@ -167,7 +151,7 @@ class ChessBoardTest {
                     final Square target = new Square(File.D, Rank.SIX);
 
                     // when & then
-                    assertThatThrownBy(() -> chessBoard.move(queenSource, target, Team.WHITE))
+                    assertThatThrownBy(() -> chessBoard.move(queenSource, target))
                             .isInstanceOf(IllegalArgumentException.class)
                             .hasMessage("기물에 가로막혀 갈 수 없는 경로입니다.");
                 }),
@@ -191,7 +175,7 @@ class ChessBoardTest {
                     final Piece whitePawn = chessBoard.getPieceSquares().get(pawnSource);
 
                     // when
-                    chessBoard.move(pawnSource, target, Team.WHITE);
+                    chessBoard.move(pawnSource, target);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -220,7 +204,7 @@ class ChessBoardTest {
                     final Piece blackKnight = beforePieceSquares.get(knightSource);
 
                     // when
-                    chessBoard.move(knightSource, pawnSource, Team.BLACK);
+                    chessBoard.move(knightSource, pawnSource);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -251,7 +235,7 @@ class ChessBoardTest {
                     final Piece whitePawn = chessBoard.getPieceSquares().get(pawnSource);
 
                     // when
-                    chessBoard.move(pawnSource, knightSource, Team.WHITE);
+                    chessBoard.move(pawnSource, knightSource);
 
                     //then
                     final Map<Square, Piece> pieceSquares = chessBoard.getPieceSquares();
@@ -275,12 +259,12 @@ class ChessBoardTest {
                     // given
                     final Square blackPawnSource = new Square(File.B, Rank.SEVEN);
                     final Square target = new Square(File.B, Rank.FIVE);
-                    chessBoard.move(blackPawnSource, target, Team.BLACK);
+                    chessBoard.move(blackPawnSource, target);
 
                     final Square whitePawnSource = new Square(File.B, Rank.FOUR);
 
                     // when & then
-                    assertThatThrownBy(() -> chessBoard.move(whitePawnSource, target, Team.WHITE))
+                    assertThatThrownBy(() -> chessBoard.move(whitePawnSource, target))
                             .isInstanceOf(IllegalArgumentException.class)
                             .hasMessage("공격할 수 없는 경로입니다.");
                 })

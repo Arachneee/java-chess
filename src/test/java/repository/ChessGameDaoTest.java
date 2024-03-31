@@ -23,7 +23,6 @@ class ChessGameDaoTest {
 
     final Connection connection = TestChessConnectionGenerator.getConnection();
     final ChessGameDao chessGameDao = new ChessGameDao(connection);
-    final ChessBoardDao chessBoardDao = new ChessBoardDao(connection);
     final PlayerDao playerDao = new PlayerDao(connection);
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");

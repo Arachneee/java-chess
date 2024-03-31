@@ -2,6 +2,7 @@ package domain.game;
 
 import domain.Team;
 import domain.chessboard.ChessBoard;
+import domain.piece.Piece;
 import domain.player.Player;
 import domain.result.ChessResult;
 import domain.square.Square;
@@ -34,7 +35,9 @@ public class ChessGame {
     }
 
     public void move(final Square source, final Square target) {
-        chessBoard.move(source, target, currentTeam);
+        validateTeam(source);
+
+        chessBoard.move(source, target);
 
         currentTeam = currentTeam.turn();
 
@@ -43,6 +46,14 @@ public class ChessGame {
         }
 
         chessResult = ChessResult.from(chessBoard.getPieceSquares());
+    }
+
+    private void validateTeam(final Square source) {
+        final Piece piece = chessBoard.findPiece(source);
+
+        if (piece.isOppositeTeam(currentTeam)) {
+            throw new IllegalArgumentException("상대방의 말을 움직일 수 없습니다.");
+        }
     }
 
     public void end() {
