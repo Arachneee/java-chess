@@ -1,10 +1,14 @@
 create table game
 (
-    id              int auto_increment primary key,
+    id              int auto_increment
+        primary key,
     current_team    varchar(5) not null,
     status          varchar(7) not null,
     black_player_id int        not null,
     white_player_id int        not null,
+    number          int        not null,
+    constraint number
+        unique (number),
     constraint game_ibfk_1
         foreign key (black_player_id) references player (id)
             on update cascade on delete cascade,
