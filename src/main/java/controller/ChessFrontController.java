@@ -10,7 +10,6 @@ import service.PlayerService;
 import view.OutputView;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class ChessFrontController {
         this.status = new StartingStatus();
     }
 
-    public void run() throws SQLException {
+    public void run() {
         while (status.isNotEnd()) {
             try {
                 final String command = status.readCommand();
@@ -59,7 +58,7 @@ public class ChessFrontController {
                     "end", new EndCommand(chessGameService));
         }
 
-        private ChessProgramStatus execute(final String commandInput, final ChessProgramStatus status) throws SQLException {
+        private ChessProgramStatus execute(final String commandInput, final ChessProgramStatus status) {
             if ("quit".equals(commandInput)) {
                 return new EndStatus();
             }

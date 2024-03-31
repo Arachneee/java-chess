@@ -23,14 +23,18 @@ public class NewGameCommand extends StartingCommand {
     }
 
     @Override
-    public ChessProgramStatus executeStarting() throws SQLException {
+    public ChessProgramStatus executeStarting() {
         final Player blackPlayer = roadPlayer(Team.BLACK);
         final Player whitePlayer = roadPlayer(Team.WHITE);
-        final ChessGame chessGame = chessGameService.createNewGame(blackPlayer, whitePlayer);
 
-        printStartGame(chessGame);
+        try {
+            final ChessGame chessGame = chessGameService.createNewGame(blackPlayer, whitePlayer);
+            printStartGame(chessGame);
 
-        return new RunningStatus(chessGame);
+            return new RunningStatus(chessGame);
+        } catch (final SQLException e) {
+            throw new RuntimeException("서버 오류입니다.");
+        }
     }
 
     private Player roadPlayer(final Team team) {

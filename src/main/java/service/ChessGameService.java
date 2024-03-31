@@ -44,7 +44,7 @@ public class ChessGameService {
             return chessGame;
         } catch (final Exception e) {
             connection.rollback();
-            throw new IllegalArgumentException(e.getMessage());
+            throw new RuntimeException("서버 오류입니다.");
         } finally {
             connection.setAutoCommit(true);
         }
@@ -103,7 +103,6 @@ public class ChessGameService {
             connection.commit();
         } catch (final Exception e) {
             connection.rollback();
-            throw new IllegalArgumentException(e.getMessage());
         } finally {
             connection.setAutoCommit(true);
         }
