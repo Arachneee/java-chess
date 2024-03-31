@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ChessGameDao {
+public class ChessGameRepository {
 
     private final Connection connection;
     private final ChessBoardDao chessBoardDao;
 
-    public ChessGameDao(final Connection connection) {
+    public ChessGameRepository(final Connection connection) {
         this.connection = connection;
         this.chessBoardDao = new ChessBoardDao(connection);
     }

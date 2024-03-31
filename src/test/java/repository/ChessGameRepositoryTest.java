@@ -19,16 +19,16 @@ import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class ChessGameDaoTest {
+class ChessGameRepositoryTest {
 
     final Connection connection = TestChessConnectionGenerator.getConnection();
-    final ChessGameDao chessGameDao = new ChessGameDao(connection);
+    final ChessGameRepository chessGameRepository = new ChessGameRepository(connection);
     final PlayerDao playerDao = new PlayerDao(connection);
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");
     int gameNumber;
 
-    ChessGameDaoTest() throws SQLException {
+    ChessGameRepositoryTest() throws SQLException {
     }
 
     @BeforeEach
@@ -39,7 +39,7 @@ class ChessGameDaoTest {
                 playerDao.add(pobi);
                 playerDao.add(json);
 
-                gameNumber = chessGameDao.findMaxNumber();
+                gameNumber = chessGameRepository.findMaxNumber();
                 final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
                         .number(gameNumber)
                         .blackPlayer(new Player(pobi))
@@ -49,7 +49,7 @@ class ChessGameDaoTest {
                         .currentTeam(Team.WHITE)
                         .build();
 
-                chessGameDao.create(chessGame);
+                chessGameRepository.create(chessGame);
             }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
@@ -75,14 +75,14 @@ class ChessGameDaoTest {
     @Test
     void update() {
         // given
-        final ChessGame chessGame = chessGameDao.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING).get();
+        final ChessGame chessGame = chessGameRepository.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING).get();
         chessGame.move(Square.of("B", "TWO"), Square.of("B", "FOUR"));
 
         // when
-        chessGameDao.update(chessGame);
+        chessGameRepository.update(chessGame);
 
         // then
-        final ChessGame findChessGame = chessGameDao.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING).get();
+        final ChessGame findChessGame = chessGameRepository.findByNumberAndStatus(gameNumber, ChessGameStatus.RUNNING).get();
 
         assertAll(
                 () -> assertThat(findChessGame.getCurrentTeam()).isEqualTo(chessGame.getCurrentTeam()),

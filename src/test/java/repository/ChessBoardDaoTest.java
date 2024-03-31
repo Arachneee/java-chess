@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChessBoardDaoTest {
     final Connection connection = TestChessConnectionGenerator.getConnection();
     final PlayerDao playerDao = new PlayerDao(connection);
-    final ChessGameDao chessGameDao = new ChessGameDao(connection);
+    final ChessGameRepository chessGameRepository = new ChessGameRepository(connection);
     final ChessBoardDao chessBoardDao = new ChessBoardDao(connection);
 
     int gameNumber;
@@ -41,7 +41,7 @@ class ChessBoardDaoTest {
                 playerDao.add(pobi);
                 playerDao.add(json);
 
-                gameNumber = chessGameDao.findMaxNumber();
+                gameNumber = chessGameRepository.findMaxNumber();
                 final ChessGame chessGame = ChessGame.ChessGameBuilder.builder()
                         .number(gameNumber)
                         .blackPlayer(new Player(pobi))
@@ -51,7 +51,7 @@ class ChessBoardDaoTest {
                         .currentTeam(Team.WHITE)
                         .build();
 
-                chessGameDao.create(chessGame);
+                chessGameRepository.create(chessGame);
             }
         } catch (final SQLException e) {
             throw new RuntimeException(e);
