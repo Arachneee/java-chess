@@ -26,12 +26,12 @@ public class ChessFrontController {
         this.status = new StartingStatus();
     }
 
-    public void run() {
+    public void run() throws SQLException {
         while (status.isNotEnd()) {
             try {
                 final String command = status.readCommand();
                 status = commandRouter.execute(command, status);
-            } catch (final IllegalArgumentException | SQLException e) {
+            } catch (final IllegalArgumentException e) {
                 OutputView.printError(e.getMessage());
             }
         }
