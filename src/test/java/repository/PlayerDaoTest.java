@@ -18,6 +18,9 @@ class PlayerDaoTest {
     final Connection connection = TestChessConnectionGenerator.getConnection();
     final PlayerDao playerDao = new PlayerDao(connection);
 
+    PlayerDaoTest() throws SQLException {
+    }
+
     @BeforeEach
     void before() {
         try {

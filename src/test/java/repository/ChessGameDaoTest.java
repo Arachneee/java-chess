@@ -29,6 +29,9 @@ class ChessGameDaoTest {
     final PlayerName json = new PlayerName("json");
     int gameNumber;
 
+    ChessGameDaoTest() throws SQLException {
+    }
+
     @BeforeEach
     void before() {
         try {

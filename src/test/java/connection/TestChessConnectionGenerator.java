@@ -15,12 +15,8 @@ public class TestChessConnectionGenerator {
     private TestChessConnectionGenerator() {
     }
 
-    public static Connection getConnection() {
+    public static Connection getConnection() throws SQLException {
         // 드라이버 연결
-        try {
-            return DriverManager.getConnection("jdbc:mysql://" + SERVER + "/" + TEST_DATABASE + OPTION, USERNAME, PASSWORD);
-        } catch (final SQLException e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+        return DriverManager.getConnection("jdbc:mysql://" + SERVER + "/" + TEST_DATABASE + OPTION, USERNAME, PASSWORD);
     }
 }

@@ -30,6 +30,9 @@ class ChessBoardDaoTest {
     final PlayerName pobi = new PlayerName("pobi");
     final PlayerName json = new PlayerName("json");
 
+    ChessBoardDaoTest() throws SQLException {
+    }
+
     @BeforeEach
     void before() {
         try {

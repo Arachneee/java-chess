@@ -16,12 +16,8 @@ public class EndCommand extends RunningCommand {
     }
 
     @Override
-    public ChessProgramStatus executeRunning(final List<String> playCommandFormat, final int gameNumber) {
-        try {
-            chessGameService().endGame(gameNumber);
-        } catch (final SQLException e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+    public ChessProgramStatus executeRunning(final List<String> playCommandFormat, final int gameNumber) throws SQLException {
+        chessGameService().endGame(gameNumber);
 
         final ChessGame chessGame = chessGameService().findGameByNumber(gameNumber);
         OutputView.printStatus(chessGame.getChessResult());
