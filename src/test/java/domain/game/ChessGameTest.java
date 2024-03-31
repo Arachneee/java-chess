@@ -71,9 +71,6 @@ class ChessGameTest {
                 .currentTeam(Team.WHITE)
                 .build();
 
-        final Square source = new Square(File.B, Rank.TWO);
-        final Square target = new Square(File.B, Rank.FOUR);
-
         // when
         chessGame.move(Square.from("e2"), Square.from("e3"));
         chessGame.move(Square.from("f7"), Square.from("f6"));
