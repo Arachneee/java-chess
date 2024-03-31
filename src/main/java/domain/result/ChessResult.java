@@ -16,12 +16,13 @@ import static java.util.stream.Collectors.groupingBy;
 public class ChessResult {
 
     private static final Score SAME_FILE_PAWN_SCORE = new Score(0.5);
-
-    private final Map<Team, Score> teamScores;
+    private final Score blackScore;
+    private final Score whiteScore;
     private final WinStatus winStatus;
 
-    private ChessResult(final Map<Team, Score> teamScores, final WinStatus winStatus) {
-        this.teamScores = teamScores;
+    private ChessResult(final Score blackScore, final Score whiteScore, final WinStatus winStatus) {
+        this.blackScore = blackScore;
+        this.whiteScore = whiteScore;
         this.winStatus = winStatus;
     }
 
@@ -31,7 +32,7 @@ public class ChessResult {
 
         final WinStatus winStatus = WinStatus.of(whiteScore, blackScore);
 
-        return new ChessResult(Map.of(Team.WHITE, whiteScore, Team.BLACK, blackScore), winStatus);
+        return new ChessResult(blackScore, whiteScore, winStatus);
     }
 
     private static Score sumTotalScore(final Map<Square, Piece> pieceSquares, final Team team) {
@@ -74,11 +75,11 @@ public class ChessResult {
     }
 
     public double getWhiteScore() {
-        return teamScores.get(Team.WHITE).toDouble();
+        return whiteScore.toDouble();
     }
 
     public double getBlackScore() {
-        return teamScores.get(Team.BLACK).toDouble();
+        return blackScore.toDouble();
     }
 
     public WinStatus getWinStatus() {
