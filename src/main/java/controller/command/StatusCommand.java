@@ -2,26 +2,23 @@ package controller.command;
 
 import controller.status.ChessProgramStatus;
 import controller.status.RunningStatus;
-import domain.result.ChessResult;
 import dto.ChessGameDto;
 import service.ChessGameService;
-import service.ChessResultService;
 import view.OutputView;
 
 import java.util.List;
 
 public class StatusCommand extends RunningCommand {
 
-    public StatusCommand(final ChessGameService chessGameService, final ChessResultService chessResultService) {
-        super(chessGameService, chessResultService);
+    public StatusCommand(final ChessGameService chessGameService) {
+        super(chessGameService);
     }
 
     @Override
-    public ChessProgramStatus executeRunning(final List<String> playCommandFormat, final int gameNumber) {
+    public ChessProgramStatus execute(final List<String> playCommandFormat, final int gameNumber) {
         final ChessGameDto chessGame = chessGameService().getGameDto(gameNumber);
 
-        final ChessResult chessResult = chessResultService().calculateChessResult(chessGame.board());
-        OutputView.printStatus(chessResult);
+        OutputView.printStatus(chessGame.chessResult());
 
         return new RunningStatus(gameNumber, chessGameService());
     }

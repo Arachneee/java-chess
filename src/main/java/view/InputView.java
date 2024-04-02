@@ -19,6 +19,7 @@ public class InputView {
                 > 게임 새로 시작 : start
                 > 게임 이어하기 : continue
                 > 게임 전적 검색 : record
+                > 게임 랭킹 : ranking
                 > 프로그램 종료 : quit%n""");
 
         return SCANNER.nextLine();

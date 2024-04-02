@@ -4,7 +4,7 @@ import controller.status.ChessProgramStatus;
 import controller.status.StartingStatus;
 import domain.player.Player;
 import domain.result.WinStatusSummary;
-import service.ChessResultService;
+import service.ChessGameService;
 import service.PlayerService;
 import view.InputView;
 import view.OutputView;
@@ -12,17 +12,17 @@ import view.OutputView;
 public class RecordCommand extends StartingCommand {
 
     private final PlayerService playerService;
-    private final ChessResultService chessResultService;
+    private final ChessGameService chessGameService;
 
-    public RecordCommand(final PlayerService playerService, final ChessResultService chessResultService) {
+    public RecordCommand(final PlayerService playerService, final ChessGameService chessGameService) {
         this.playerService = playerService;
-        this.chessResultService = chessResultService;
+        this.chessGameService = chessGameService;
     }
 
     @Override
-    public ChessProgramStatus executeStarting() {
+    public ChessProgramStatus execute() {
         final Player player = readPlayer();
-        final WinStatusSummary winStatusSummary = chessResultService.findGameRecord(player);
+        final WinStatusSummary winStatusSummary = chessGameService.findGameRecord(player);
         OutputView.printGameRecord(winStatusSummary);
 
         return new StartingStatus();

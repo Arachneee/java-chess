@@ -5,6 +5,8 @@ import domain.player.PlayerName;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class PlayerDao {
@@ -51,6 +53,23 @@ public class PlayerDao {
             final var resultSet = preparedStatement.executeQuery();
 
             return resultSet.next();
+        } catch (final SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Player> findAll() {
+        final var query = "SELECT * FROM player";
+        try (final var preparedStatement = connection.prepareStatement(query)) {
+            final var resultSet = preparedStatement.executeQuery();
+
+            final List<Player> players = new ArrayList<>();
+
+            while (resultSet.next()) {
+                players.add(new Player(new PlayerName(resultSet.getString("name"))));
+            }
+
+            return players;
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }

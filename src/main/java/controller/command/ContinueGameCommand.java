@@ -18,7 +18,7 @@ public class ContinueGameCommand extends StartingCommand {
     }
 
     @Override
-    public ChessProgramStatus executeStarting() {
+    public ChessProgramStatus execute() {
         final List<Integer> runningGameNumbers = chessGameService.findRunningGameNumbers();
         final int gameNumber = readGameNumber(runningGameNumbers);
 

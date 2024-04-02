@@ -23,7 +23,7 @@ public class NewGameCommand extends StartingCommand {
     }
 
     @Override
-    public ChessProgramStatus executeStarting() throws SQLException {
+    public ChessProgramStatus execute() throws SQLException {
         final Player blackPlayer = roadPlayer(Team.BLACK);
         final Player whitePlayer = roadPlayer(Team.WHITE);
 

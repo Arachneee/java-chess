@@ -5,6 +5,7 @@ import domain.player.PlayerName;
 import repository.PlayerDao;
 
 import java.sql.Connection;
+import java.util.List;
 
 public class PlayerService {
 
@@ -27,5 +28,9 @@ public class PlayerService {
     public Player findPlayer(final String name) {
         return playerDao.findPlayerByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("플레이어를 찾을 수 없습니댜."));
+    }
+
+    public List<Player> findAllPlayer() {
+        return playerDao.findAll();
     }
 }

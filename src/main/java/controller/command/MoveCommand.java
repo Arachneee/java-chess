@@ -4,11 +4,9 @@ import controller.status.ChessProgramStatus;
 import controller.status.RunningStatus;
 import controller.status.StartingStatus;
 import domain.game.ChessGameStatus;
-import domain.result.ChessResult;
 import domain.square.Square;
 import dto.ChessGameDto;
 import service.ChessGameService;
-import service.ChessResultService;
 import view.OutputView;
 
 import java.sql.SQLException;
@@ -20,12 +18,12 @@ public class MoveCommand extends RunningCommand {
     private static final int TARGET_INDEX = 2;
     private static final int MOVE_COMMAND_SIZE = 3;
 
-    public MoveCommand(final ChessGameService chessGameService, final ChessResultService chessResultService) {
-        super(chessGameService, chessResultService);
+    public MoveCommand(final ChessGameService chessGameService) {
+        super(chessGameService);
     }
 
     @Override
-    public ChessProgramStatus executeRunning(final List<String> command, final int gameNumber) throws SQLException {
+    public ChessProgramStatus execute(final List<String> command, final int gameNumber) throws SQLException {
         validateCommand(command);
         final Square source = Square.from(command.get(SOURCE_INDEX));
         final Square target = Square.from(command.get(TARGET_INDEX));
@@ -36,10 +34,7 @@ public class MoveCommand extends RunningCommand {
         OutputView.printChessBoard(chessGame.board());
 
         if (chessGame.status() == ChessGameStatus.END) {
-            final ChessResult chessResult = chessResultService().calculateChessResult(chessGame.board());
-            chessResultService().saveResult(gameNumber, chessResult);
-
-            OutputView.printStatus(chessResult);
+            OutputView.printStatus(chessGame.chessResult());
             return new StartingStatus();
         }
         return new RunningStatus(gameNumber, chessGameService());

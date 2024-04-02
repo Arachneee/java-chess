@@ -4,6 +4,7 @@ import domain.Team;
 import domain.chessboard.ChessBoard;
 import domain.piece.Piece;
 import domain.player.Player;
+import domain.result.ChessResult;
 import domain.square.Square;
 
 public class ChessGame {
@@ -51,8 +52,16 @@ public class ChessGame {
         }
     }
 
+    public ChessResult calculateResult() {
+        return ChessResult.from(chessBoard.getPieceSquares());
+    }
+
     public void end() {
         status = ChessGameStatus.END;
+    }
+
+    public boolean isEnd() {
+        return status == ChessGameStatus.END;
     }
 
     public Player getCurrentPlayer() {

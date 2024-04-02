@@ -5,7 +5,7 @@ import domain.WinStatus;
 import java.util.List;
 import java.util.Objects;
 
-public class WinStatusSummary {
+public class WinStatusSummary implements Comparable<WinStatusSummary> {
 
     private final int winCount;
     private final int loseCount;
@@ -44,6 +44,14 @@ public class WinStatusSummary {
 
     public int getDrawCount() {
         return drawCount;
+    }
+
+    @Override
+    public int compareTo(final WinStatusSummary o) {
+        if (this.winCount == o.winCount) {
+            return Integer.compare(o.loseCount, this.loseCount);
+        }
+        return Integer.compare(this.winCount, o.winCount);
     }
 
     @Override

@@ -1,12 +1,11 @@
 package dto;
 
-import domain.Team;
 import domain.game.ChessGame;
 import domain.game.ChessGameStatus;
 import domain.piece.Piece;
+import domain.result.ChessResult;
 import domain.square.Square;
 
-import java.util.List;
 import java.util.Map;
 
 public record ChessGameDto(
@@ -16,7 +15,8 @@ public record ChessGameDto(
         String currentTeam,
         String currentPlayerName,
         Map<Square, Piece> board,
-        ChessGameStatus status
+        ChessGameStatus status,
+        ChessResult chessResult
 ) {
 
     public static ChessGameDto from(final ChessGame chessGame) {
@@ -26,6 +26,7 @@ public record ChessGameDto(
                 chessGame.getCurrentTeam().name(),
                 chessGame.getCurrentPlayer().getName(),
                 chessGame.getChessBoard().getPieceSquares(),
-                chessGame.getStatus());
+                chessGame.getStatus(),
+                chessGame.calculateResult());
     }
 }

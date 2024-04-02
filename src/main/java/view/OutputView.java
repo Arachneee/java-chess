@@ -7,10 +7,12 @@ import domain.square.File;
 import domain.square.Rank;
 import domain.square.Square;
 import dto.ChessGameDto;
+import dto.PlayerRankingDto;
 import view.format.PieceFormat;
 import view.format.WinStatusFormat;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -72,5 +74,17 @@ public class OutputView {
 
     public static void printError(final String message) {
         System.out.println("[ERROR] " + message);
+    }
+
+    public static void printRanking(final List<PlayerRankingDto> rankings) {
+        int i = 1;
+
+        for (final PlayerRankingDto ranking : rankings) {
+            System.out.printf("%d | %s: %d승 %d패 %d무%n",
+                    i++, ranking.playerName(),
+                    ranking.winStatusSummary().getWinCount(),
+                    ranking.winStatusSummary().getLoseCount(),
+                    ranking.winStatusSummary().getDrawCount());
+        }
     }
 }

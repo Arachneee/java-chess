@@ -5,7 +5,6 @@ import controller.status.ChessProgramStatus;
 import controller.status.EndStatus;
 import controller.status.StartingStatus;
 import service.ChessGameService;
-import service.ChessResultService;
 import service.PlayerService;
 import view.OutputView;
 
@@ -43,46 +42,45 @@ public class ChessFrontController {
         private static final String COMMAND_DELIMITER = " ";
         private static final int COMMAND_KEY_INDEX = 0;
 
-        private final Map<String, Command> router;
+        private final Map<String, RunningCommand> runningCommandRouter;
+        private final Map<String, StartingCommand> startingCommandRouter;
 
         private CommandRouter(final Connection connection) {
             final PlayerService playerService = new PlayerService(connection);
             final ChessGameService chessGameService = new ChessGameService(connection);
-            final ChessResultService chessResultService = new ChessResultService(connection);
 
-            this.router = Map.of(
+            this.startingCommandRouter = Map.of(
                     "start", new NewGameCommand(playerService, chessGameService),
                     "continue", new ContinueGameCommand(chessGameService),
-                    "record", new RecordCommand(playerService, chessResultService),
-                    "move", new MoveCommand(chessGameService, chessResultService),
-                    "status", new StatusCommand(chessGameService, chessResultService),
-                    "end", new EndCommand(chessGameService, chessResultService));
+                    "record", new RecordCommand(playerService, chessGameService),
+                    "ranking", new RankingCommand(playerService, chessGameService)
+            );
+
+            this.runningCommandRouter = Map.of(
+                    "move", new MoveCommand(chessGameService),
+                    "status", new StatusCommand(chessGameService),
+                    "end", new EndCommand(chessGameService)
+            );
         }
 
         private ChessProgramStatus execute(final String commandInput, final ChessProgramStatus status) throws SQLException {
             if ("quit".equals(commandInput)) {
                 return new EndStatus();
             }
-            validateCommandInput(commandInput);
 
             final List<String> commandInputs = Arrays.asList(commandInput.split(COMMAND_DELIMITER));
             final String commandKey = commandInputs.get(COMMAND_KEY_INDEX);
 
-            final Command command = router.get(commandKey);
-            if (status.isStarting() && command.isStarting()) {
-                return command.executeStarting();
+            if (status.isStarting() && startingCommandRouter.containsKey(commandKey)) {
+                final StartingCommand startingCommand = startingCommandRouter.get(commandKey);
+                return startingCommand.execute();
             }
-            if (status.isRunning() && command.isRunning()) {
-                return command.executeRunning(commandInputs, status.getGameNumber());
+            if (status.isRunning()
+                    && (runningCommandRouter.containsKey(commandKey) || MOVE_FORMAT.matcher(commandInput).matches())) {
+                final RunningCommand runningCommand = runningCommandRouter.get(commandKey);
+                return runningCommand.execute(commandInputs, status.getGameNumber());
             }
 
-            throw new IllegalArgumentException("잘못된 커맨드입니다.");
-        }
-
-        private void validateCommandInput(final String commandInput) {
-            if (router.containsKey(commandInput) || MOVE_FORMAT.matcher(commandInput).matches()) {
-                return;
-            }
             throw new IllegalArgumentException("잘못된 커맨드입니다.");
         }
     }
