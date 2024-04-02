@@ -1,8 +1,10 @@
 package controller.status;
 
+import view.format.CommandFormat;
+
 public interface ChessProgramStatus {
 
-    String readCommand();
+    CommandFormat readCommand();
 
     int getGameNumber();
 

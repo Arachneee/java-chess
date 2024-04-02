@@ -3,6 +3,7 @@ package controller.status;
 import dto.ChessGameDto;
 import service.ChessGameService;
 import view.InputView;
+import view.format.CommandFormat;
 
 public class RunningStatus implements ChessProgramStatus {
 
@@ -15,7 +16,7 @@ public class RunningStatus implements ChessProgramStatus {
     }
 
     @Override
-    public String readCommand() {
+    public CommandFormat readCommand() {
         final ChessGameDto chessGameDto = chessGameService.getGameDto(gameNumber);
 
         return InputView.readGameCommand(chessGameDto.currentTeam(), chessGameDto.currentPlayerName());

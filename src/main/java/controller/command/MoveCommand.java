@@ -14,9 +14,9 @@ import java.util.List;
 
 public class MoveCommand extends RunningCommand {
 
-    private static final int SOURCE_INDEX = 1;
-    private static final int TARGET_INDEX = 2;
-    private static final int MOVE_COMMAND_SIZE = 3;
+    private static final int SOURCE_INDEX = 0;
+    private static final int TARGET_INDEX = 1;
+    private static final int MOVE_COMMAND_SIZE = 2;
 
     public MoveCommand(final ChessGameService chessGameService) {
         super(chessGameService);
@@ -42,7 +42,7 @@ public class MoveCommand extends RunningCommand {
 
     private void validateCommand(final List<String> command) {
         if (command.size() != MOVE_COMMAND_SIZE) {
-            throw new IllegalArgumentException("잘못된 command입니다.");
+            throw new IllegalArgumentException("잘못된 커맨드입니다.");
         }
     }
 }

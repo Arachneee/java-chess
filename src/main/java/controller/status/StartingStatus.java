@@ -1,11 +1,12 @@
 package controller.status;
 
 import view.InputView;
+import view.format.CommandFormat;
 
 public class StartingStatus implements ChessProgramStatus {
 
     @Override
-    public String readCommand() {
+    public CommandFormat readCommand() {
         return InputView.readCommand();
     }
 
