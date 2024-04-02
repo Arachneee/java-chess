@@ -17,7 +17,6 @@ public enum CommandFormat {
 
     private static final Pattern MOVE_FORMAT = Pattern.compile("^move [a-z]\\d [a-z]\\d$");
     private static final String COMMAND_DELIMITER = " ";
-    private static final int COMMAND_KEY_INDEX = 0;
     private static final int SOURCE_INDEX = 1;
     private static final int TARGET_INDEX = 2;
 
