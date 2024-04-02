@@ -1,7 +1,7 @@
 package repository;
 
 import domain.WinStatus;
-import domain.player.Player;
+import domain.player.PlayerName;
 import domain.result.ChessResult;
 
 import java.sql.Connection;
@@ -37,7 +37,7 @@ public class ChessResultDao {
         }
     }
 
-    public List<WinStatus> findBlackWinStatus(final Player player) {
+    public List<WinStatus> findBlackWinStatus(final PlayerName player) {
         final var query = "SELECT win_status FROM result AS R " +
                 "LEFT JOIN player AS P ON R.black_player_id = P.id " +
                 "WHERE P.name = (?)";
@@ -58,7 +58,7 @@ public class ChessResultDao {
         }
     }
 
-    public List<WinStatus> findWhiteWinStatus(final Player player) {
+    public List<WinStatus> findWhiteWinStatus(final PlayerName player) {
         final var query = "SELECT win_status FROM result AS R " +
                 "LEFT JOIN player AS P ON R.white_player_id = P.id " +
                 "WHERE P.name = (?)";

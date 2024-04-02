@@ -1,7 +1,7 @@
 package controller.status;
 
 import domain.Team;
-import domain.player.Player;
+import domain.player.PlayerName;
 import domain.result.WinStatusSummary;
 import dto.ChessGameDto;
 import dto.PlayerRankingDto;
@@ -9,12 +9,13 @@ import service.ChessGameService;
 import service.PlayerService;
 import view.InputView;
 import view.OutputView;
-import view.format.CommandFormat;
+import view.format.Command;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class ChessStartingController implements ChessControllerStatus {
+
     private final PlayerService playerService;
     private final ChessGameService chessGameService;
 
@@ -24,14 +25,14 @@ public class ChessStartingController implements ChessControllerStatus {
     }
 
     @Override
-    public CommandFormat readCommand() {
+    public Command readCommand() {
         return InputView.readCommand();
     }
 
     @Override
-    public ChessControllerStatus execute(final CommandFormat commandFormat) throws Exception {
-        return switch (commandFormat) {
-            case START -> newGameStart();
+    public ChessControllerStatus execute(final Command command) throws SQLException {
+        return switch (command.getCommandFormat()) {
+            case START -> startNewGame();
             case CONTINUE -> continueGame();
             case RECORD -> printPlayerRecord();
             case RANKING -> printRanking();
@@ -39,9 +40,9 @@ public class ChessStartingController implements ChessControllerStatus {
         };
     }
 
-    private ChessControllerStatus newGameStart() throws SQLException {
-        final Player blackPlayer = roadPlayer(Team.BLACK);
-        final Player whitePlayer = roadPlayer(Team.WHITE);
+    private ChessControllerStatus startNewGame() throws SQLException {
+        final PlayerName blackPlayer = roadPlayer(Team.BLACK);
+        final PlayerName whitePlayer = roadPlayer(Team.WHITE);
 
         final int gameId = chessGameService.createNewGame(blackPlayer, whitePlayer);
 
@@ -51,7 +52,7 @@ public class ChessStartingController implements ChessControllerStatus {
         return new ChessRunningController(gameId, playerService, chessGameService);
     }
 
-    private Player roadPlayer(final Team team) {
+    private PlayerName roadPlayer(final Team team) {
         while (true) {
             try {
                 final String name = InputView.readTeamPlayerName(team);
@@ -87,18 +88,18 @@ public class ChessStartingController implements ChessControllerStatus {
     }
 
     private ChessControllerStatus printPlayerRecord() {
-        final Player player = readPlayer();
+        final PlayerName player = readPlayer();
         final WinStatusSummary winStatusSummary = chessGameService.findGameRecord(player);
         OutputView.printGameRecord(winStatusSummary);
 
         return new ChessStartingController(playerService, chessGameService);
     }
 
-    private Player readPlayer() {
+    private PlayerName readPlayer() {
         while (true) {
             try {
                 final String name = InputView.readPlayerName();
-                return playerService.findPlayer(name);
+                return playerService.findPlayerName(name);
             } catch (final IllegalArgumentException e) {
                 OutputView.printError(e.getMessage());
             }
@@ -106,8 +107,8 @@ public class ChessStartingController implements ChessControllerStatus {
     }
 
     private ChessControllerStatus printRanking() {
-        final List<Player> players = playerService.findAllPlayer();
-        final List<PlayerRankingDto> rankings = chessGameService.getRanking(players);
+        final List<PlayerName> playerNames = playerService.findAllPlayerNames();
+        final List<PlayerRankingDto> rankings = chessGameService.getRanking(playerNames);
 
         OutputView.printRanking(rankings);
 

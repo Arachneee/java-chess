@@ -1,7 +1,7 @@
 package view;
 
 import domain.Team;
-import view.format.CommandFormat;
+import view.format.Command;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,7 +14,7 @@ public class InputView {
     private InputView() {
     }
 
-    public static CommandFormat readCommand() {
+    public static Command readCommand() {
         System.out.printf("""
                 > 체스 게임을 시작합니다.
                 > 게임 새로 시작 : start
@@ -23,13 +23,13 @@ public class InputView {
                 > 게임 랭킹 : ranking
                 > 프로그램 종료 : quit%n""");
 
-        return CommandFormat.from(SCANNER.nextLine());
+        return Command.from(SCANNER.nextLine());
     }
 
-    public static CommandFormat readGameCommand(final String team, final String playerName) {
+    public static Command readGameCommand(final String team, final String playerName) {
         System.out.printf("%n%s팀 %s의 차례입니다.%n", team, playerName);
 
-        return CommandFormat.from(SCANNER.nextLine());
+        return Command.from(SCANNER.nextLine());
     }
 
     public static int readContinueGame(final List<Integer> runningGame) {

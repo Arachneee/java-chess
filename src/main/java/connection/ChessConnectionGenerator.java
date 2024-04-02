@@ -16,7 +16,6 @@ public class ChessConnectionGenerator {
     }
 
     public static Connection getConnection() throws SQLException {
-        // 드라이버 연결
         return DriverManager.getConnection("jdbc:mysql://" + SERVER + "/" + DATABASE + OPTION, USERNAME, PASSWORD);
     }
 }

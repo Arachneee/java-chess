@@ -1,10 +1,12 @@
 package controller.status;
 
-import view.format.CommandFormat;
+import view.format.Command;
+
+import java.sql.SQLException;
 
 public interface ChessControllerStatus {
 
-    CommandFormat readCommand();
+    Command readCommand();
 
-    ChessControllerStatus execute(final CommandFormat commandFormat) throws Exception;
+    ChessControllerStatus execute(final Command commandFormat) throws SQLException;
 }

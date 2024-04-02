@@ -7,7 +7,7 @@ import service.ChessGameService;
 import service.PlayerService;
 import view.InputView;
 import view.OutputView;
-import view.format.CommandFormat;
+import view.format.Command;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -29,16 +29,16 @@ public class ChessRunningController implements ChessControllerStatus {
     }
 
     @Override
-    public CommandFormat readCommand() {
+    public Command readCommand() {
         final ChessGameDto chessGameDto = chessGameService.getGameDto(gameNumber);
 
         return InputView.readGameCommand(chessGameDto.currentTeam(), chessGameDto.currentPlayerName());
     }
 
     @Override
-    public ChessControllerStatus execute(final CommandFormat commandFormat) throws Exception {
-        return switch (commandFormat) {
-            case MOVE -> move(commandFormat.getParameters());
+    public ChessControllerStatus execute(final Command command) throws SQLException {
+        return switch (command.getCommandFormat()) {
+            case MOVE -> move(command.getParameters());
             case STATUS -> printStatus();
             case END -> endGame();
             default -> throw new IllegalArgumentException("잘못된 커맨드입니다.");

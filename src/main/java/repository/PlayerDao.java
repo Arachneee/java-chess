@@ -58,18 +58,18 @@ public class PlayerDao {
         }
     }
 
-    public List<Player> findAll() {
+    public List<PlayerName> findAllNames() {
         final var query = "SELECT * FROM player";
         try (final var preparedStatement = connection.prepareStatement(query)) {
             final var resultSet = preparedStatement.executeQuery();
 
-            final List<Player> players = new ArrayList<>();
+            final List<PlayerName> playerNames = new ArrayList<>();
 
             while (resultSet.next()) {
-                players.add(new Player(new PlayerName(resultSet.getString("name"))));
+                playerNames.add(new PlayerName(resultSet.getString("name")));
             }
 
-            return players;
+            return playerNames;
         } catch (final SQLException e) {
             throw new RuntimeException(e);
         }

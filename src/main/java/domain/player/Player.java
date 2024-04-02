@@ -10,6 +10,10 @@ public class Player {
         this.name = name;
     }
 
+    public PlayerName getPlayerName() {
+        return name;
+    }
+
     public String getName() {
         return name.getName();
     }
