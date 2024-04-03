@@ -22,7 +22,7 @@ public class ChessRunningController implements ChessControllerStatus {
     private final PlayerService playerService;
     private final ChessGameService chessGameService;
 
-    public ChessRunningController(final int gameNumber, final PlayerService playerService, final ChessGameService chessGameService) {
+    ChessRunningController(final int gameNumber, final PlayerService playerService, final ChessGameService chessGameService) {
         this.gameNumber = gameNumber;
         this.playerService = playerService;
         this.chessGameService = chessGameService;
@@ -77,7 +77,7 @@ public class ChessRunningController implements ChessControllerStatus {
         return new ChessRunningController(gameNumber, playerService, chessGameService);
     }
 
-    public ChessControllerStatus endGame() throws SQLException {
+    private ChessControllerStatus endGame() throws SQLException {
         chessGameService.endGame(gameNumber);
 
         final ChessGameDto chessGame = chessGameService.getGameDto(gameNumber);

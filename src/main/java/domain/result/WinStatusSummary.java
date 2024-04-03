@@ -49,7 +49,13 @@ public class WinStatusSummary implements Comparable<WinStatusSummary> {
     @Override
     public int compareTo(final WinStatusSummary o) {
         if (this.winCount == o.winCount) {
+            if (this.loseCount == o.loseCount) {
+                return Integer.compare(this.drawCount, o.drawCount);
+            }
             return Integer.compare(o.loseCount, this.loseCount);
+        }
+        if (this.loseCount == o.loseCount) {
+            return Integer.compare(this.drawCount, o.drawCount);
         }
         return Integer.compare(this.winCount, o.winCount);
     }
